@@ -74,14 +74,58 @@ const About = () => {
       
       <main className="flex-1">
         {/* Hero */}
-        <section className="gradient-hero py-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-4 animate-fade-in">
-              About GrantConnect
-            </h1>
-            <p className="text-primary-foreground/90 text-lg max-w-3xl mx-auto animate-slide-up">
-              We're on a mission to empower individuals and startups by connecting them with funding opportunities that transform ideas into reality.
-            </p>
+        <section className="relative overflow-hidden bg-background">
+          <div className="absolute inset-0 gradient-hero opacity-10" />
+          
+          <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
+              {/* Left Column - Content */}
+              <div className="animate-fade-in">
+                <div className="inline-block px-4 py-2 bg-secondary/10 rounded-full mb-6">
+                  <span className="text-sm font-semibold text-secondary">Since 2018</span>
+                </div>
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+                  Democratizing Access to{" "}
+                  <span className="text-gradient bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    Funding
+                  </span>
+                </h1>
+                <p className="text-muted-foreground text-lg md:text-xl mb-8 leading-relaxed max-w-xl">
+                  We connect innovators, entrepreneurs, and changemakers with the resources they need to transform ideas into reality and create meaningful impact worldwide.
+                </p>
+                <div className="flex flex-wrap gap-4">
+                  <Button asChild size="lg" className="shadow-elegant">
+                    <Link to="/grants">Explore Grants</Link>
+                  </Button>
+                  <Button asChild variant="outline" size="lg">
+                    <Link to="/contact">Get in Touch</Link>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Right Column - Image & Stats Overlay */}
+              <div className="relative animate-scale-in">
+                <div className="relative rounded-2xl overflow-hidden shadow-custom-xl">
+                  <img 
+                    src={teamPhoto} 
+                    alt="GrantConnect team collaborating on funding initiatives" 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+                </div>
+                
+                {/* Floating Stats Cards */}
+                <div className="absolute -bottom-6 -left-6 bg-card p-6 rounded-xl shadow-custom-lg border border-border animate-slide-up">
+                  <div className="text-4xl font-bold text-primary mb-1">500+</div>
+                  <div className="text-sm text-muted-foreground">Grants Facilitated</div>
+                </div>
+                
+                <div className="absolute -top-6 -right-6 bg-card p-6 rounded-xl shadow-custom-lg border border-border animate-slide-up" style={{ animationDelay: "200ms" }}>
+                  <div className="text-4xl font-bold text-secondary mb-1">$50M+</div>
+                  <div className="text-sm text-muted-foreground">Funding Distributed</div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
