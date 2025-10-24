@@ -102,17 +102,17 @@ const Index = () => {
             aria-hidden
           />
           {/* Mobile overlay so text remains readable on small screens */}
-          <div
+          {/* <div
             className="absolute inset-0 md:hidden pointer-events-none"
             aria-hidden
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
-          </div>
+          </div> */}
           {/* Reduce overlay opacity so background image remains visible */}
           {/* <div className="absolute inset-0 gradient-hero opacity-30" /> */}
 
           <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-28 md:py-40 lg:py-48">
-            <div className="max-w-3xl mx-0 text-left text-white/80 animate-fade-in">
+            <div className="max-w-3xl mx-auto md:mx-0 text-center md:text-left text-white/80 animate-fade-in">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-wide leading-tight transform -translate-y-3 md:-translate-y-6 lg:-translate-y-8">
                 <span className="block">Empowering Ideas</span>
                 <span className="block mt-4">Through Grants</span>
