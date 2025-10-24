@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import GrantCard from "@/components/GrantCard";
 import heroImage from "@/assets/Hero-Home.png";
+import heroMobile from "@/assets/Hero-mobile.png";
 import newsImg1 from "@/assets/grants-illustration.jpg";
 import newsImg2 from "@/assets/hero-collaboration.jpg";
 import newsImg3 from "@/assets/image.png";
@@ -88,11 +89,25 @@ const Index = () => {
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative overflow-hidden">
+          {/* Desktop / tablet background (hidden on small screens) */}
           <div
-            className="absolute inset-0 bg-cover bg-center"
+            className="hidden md:absolute md:inset-0 md:bg-cover md:bg-center md:block"
             style={{ backgroundImage: `url(${heroImage})` }}
             aria-hidden
           />
+          {/* Mobile background (visible only on small screens) */}
+          <div
+            className="absolute inset-0 bg-cover bg-center md:hidden"
+            style={{ backgroundImage: `url(${heroMobile})` }}
+            aria-hidden
+          />
+          {/* Mobile overlay so text remains readable on small screens */}
+          <div
+            className="absolute inset-0 md:hidden pointer-events-none"
+            aria-hidden
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
+          </div>
           {/* Reduce overlay opacity so background image remains visible */}
           {/* <div className="absolute inset-0 gradient-hero opacity-30" /> */}
 
