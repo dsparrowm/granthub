@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Target, Eye, Heart, Users } from "lucide-react";
-import teamPhoto from "@/assets/team-photo.jpg";
+import teamPhoto from "@/assets/image.png";
 
 const About = () => {
   const values = [
@@ -71,12 +71,12 @@ const About = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1">
         {/* Hero */}
         <section className="relative overflow-hidden bg-background">
           <div className="absolute inset-0 gradient-hero opacity-10" />
-          
+
           <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
               {/* Left Column - Content */}
@@ -106,20 +106,20 @@ const About = () => {
               {/* Right Column - Image & Stats Overlay */}
               <div className="relative animate-scale-in">
                 <div className="relative rounded-2xl overflow-hidden shadow-custom-xl">
-                  <img 
-                    src={teamPhoto} 
-                    alt="GrantConnect team collaborating on funding initiatives" 
+                  <img
+                    src={teamPhoto}
+                    alt="GrantConnect team collaborating on funding initiatives"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
                 </div>
-                
+
                 {/* Floating Stats Cards */}
                 <div className="absolute -bottom-6 -left-6 bg-card p-6 rounded-xl shadow-custom-lg border border-border animate-slide-up">
                   <div className="text-4xl font-bold text-primary mb-1">500+</div>
                   <div className="text-sm text-muted-foreground">Grants Facilitated</div>
                 </div>
-                
+
                 <div className="absolute -top-6 -right-6 bg-card p-6 rounded-xl shadow-custom-lg border border-border animate-slide-up" style={{ animationDelay: "200ms" }}>
                   <div className="text-4xl font-bold text-secondary mb-1">$50M+</div>
                   <div className="text-sm text-muted-foreground">Funding Distributed</div>
@@ -139,7 +139,7 @@ const About = () => {
                   GrantConnect was founded in 2018 with a simple yet powerful vision: to democratize access to funding for innovators, entrepreneurs, and changemakers. We believe that great ideas shouldn't fail due to lack of funding, and that passionate individuals deserve support to bring their visions to life.
                 </p>
               </div>
-              
+
               <div className="animate-slide-up" style={{ animationDelay: "100ms" }}>
                 <h2 className="text-3xl font-bold mb-4">Our Vision</h2>
                 <p className="text-muted-foreground leading-relaxed">
@@ -180,8 +180,8 @@ const About = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
               {values.map((value, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="bg-card p-6 rounded-lg shadow-custom-md hover:shadow-custom-lg transition-smooth animate-scale-in"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
@@ -207,17 +207,17 @@ const About = () => {
             </div>
 
             <div className="mb-12">
-              <img 
-                src={teamPhoto} 
-                alt="GrantConnect leadership team" 
+              <img
+                src={teamPhoto}
+                alt="GrantConnect leadership team"
                 className="w-full max-w-4xl mx-auto rounded-lg shadow-custom-xl"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
               {team.map((member, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="bg-card p-6 rounded-lg shadow-custom-md text-center animate-slide-up"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
@@ -242,8 +242,8 @@ const About = () => {
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-5xl mx-auto">
               {partners.map((partner, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="bg-card p-4 rounded-lg shadow-custom-sm hover:shadow-custom-md transition-smooth flex items-center justify-center text-center animate-scale-in"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >

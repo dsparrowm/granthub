@@ -6,7 +6,7 @@ import { useState } from "react";
 const Header = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
+
   const mainNavItems = [
     { name: "Grants", path: "/grants", hasDropdown: true },
     { name: "Resources", path: "/resources", hasDropdown: true },
@@ -17,7 +17,7 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background">
+    <header className="w-full bg-background">
       {/* Top Utility Bar */}
       <div className="bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,7 +81,7 @@ const Header = () => {
       {/* Main Navigation Bar */}
       <nav className="hidden md:block bg-card border-b border-border">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center justify-center w-full space-x-1">
             <Link to="/" className="px-4 py-3 text-sm font-medium text-foreground hover:text-primary transition-colors">
               Home
             </Link>
@@ -89,11 +89,10 @@ const Header = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-4 py-3 text-sm font-medium transition-colors flex items-center gap-1 ${
-                  isActive(item.path) 
-                    ? "text-primary border-b-2 border-primary" 
-                    : "text-foreground hover:text-primary"
-                }`}
+                className={`px-4 py-3 text-sm font-medium transition-colors flex items-center gap-1 ${isActive(item.path)
+                  ? "text-primary border-b-2 border-primary"
+                  : "text-foreground hover:text-primary"
+                  }`}
               >
                 {item.name}
                 {item.hasDropdown && <ChevronDown className="h-3 w-3" />}
@@ -118,16 +117,15 @@ const Header = () => {
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               </div>
             </div>
-            
+
             {/* Mobile Nav Items */}
             <Link
               to="/"
               onClick={() => setMobileMenuOpen(false)}
-              className={`block py-2 px-4 text-sm font-medium rounded-md transition-colors ${
-                isActive("/")
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-muted"
-              }`}
+              className={`block py-2 px-4 text-sm font-medium rounded-md transition-colors ${isActive("/")
+                ? "bg-primary text-primary-foreground"
+                : "text-foreground hover:bg-muted"
+                }`}
             >
               Home
             </Link>
@@ -136,11 +134,10 @@ const Header = () => {
                 key={item.path}
                 to={item.path}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block py-2 px-4 text-sm font-medium rounded-md transition-colors ${
-                  isActive(item.path)
-                    ? "bg-primary text-primary-foreground"
-                    : "text-foreground hover:bg-muted"
-                }`}
+                className={`block py-2 px-4 text-sm font-medium rounded-md transition-colors ${isActive(item.path)
+                  ? "bg-primary text-primary-foreground"
+                  : "text-foreground hover:bg-muted"
+                  }`}
               >
                 {item.name}
               </Link>

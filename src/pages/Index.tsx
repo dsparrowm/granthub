@@ -4,7 +4,12 @@ import { Search, FileText, Award, ArrowRight, CheckCircle } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import GrantCard from "@/components/GrantCard";
-import heroImage from "@/assets/hero-collaboration.jpg";
+import heroImage from "@/assets/Hero-Home.png";
+import newsImg1 from "@/assets/grants-illustration.jpg";
+import newsImg2 from "@/assets/hero-collaboration.jpg";
+import newsImg3 from "@/assets/image.png";
+// Use the bundled `heroImage` as the hero background. The `gradient-hero` overlay remains as a
+// visual fallback/overlay.
 
 const Index = () => {
   const featuredGrants = [
@@ -79,34 +84,98 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative overflow-hidden">
-          <div className="absolute inset-0">
-            <img 
-              src={heroImage} 
-              alt="Diverse team collaborating on innovative projects" 
-              className="w-full h-full object-cover opacity-20"
-            />
-            <div className="absolute inset-0 gradient-hero opacity-90" />
-          </div>
-          
-          <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
-            <div className="max-w-3xl mx-auto text-center text-primary-foreground animate-fade-in">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-                Empowering Ideas Through Grants
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${heroImage})` }}
+            aria-hidden
+          />
+          {/* Reduce overlay opacity so background image remains visible */}
+          {/* <div className="absolute inset-0 gradient-hero opacity-30" /> */}
+
+          <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-28 md:py-40 lg:py-48">
+            <div className="max-w-3xl mx-0 text-left text-white/80 animate-fade-in">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-wide leading-tight transform -translate-y-3 md:-translate-y-6 lg:-translate-y-8">
+                <span className="block">Empowering Ideas</span>
+                <span className="block mt-4">Through Grants</span>
               </h1>
               <p className="text-lg md:text-xl mb-8 text-primary-foreground/90">
                 Discover funding opportunities and resources for individuals and startups. Search, apply, and get funded.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button asChild variant="hero" size="lg">
+              <div className="flex flex-col sm:flex-row gap-4 justify-start">
+                <Button asChild variant="outline" size="lg" className="bg-primary-foreground text-primary">
                   <Link to="/grants">Search Grants <ArrowRight className="ml-2" /></Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
                   <Link to="/apply">Apply Now</Link>
                 </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* How we help — News / Success cards (overlapping hero) */}
+        <section className="relative -mt-12 md:-mt-20 z-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              {[
+                { img: newsImg1, title: "Seed Funding Success", desc: "Early-stage grants that helped a founder take product to market and secure follow-on investment." },
+                { img: newsImg2, title: "Scaling Small Businesses", desc: "Targeted grants enabled small businesses to expand operations and hire local talent." },
+                { img: newsImg3, title: "Social Impact Grants", desc: "Community projects that converted grant awards into ongoing revenue and social programs." },
+              ].map((card, i) => (
+                <article key={i} className="relative z-30 bg-card rounded-xl overflow-hidden shadow-custom-md hover:shadow-custom-lg transition-transform transform hover:-translate-y-1">
+                  <img src={card.img} alt={card.title} className="w-full h-44 object-cover" />
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold mb-2">{card.title}</h3>
+                    <p className="text-sm text-muted-foreground">{card.desc}</p>
+                    {/* Extra content to increase card height */}
+                    <p className="mt-3 text-sm text-muted-foreground">
+                      Our grants are paired with mentoring, capacity building and access to networks — a combination that helps recipients scale revenue and build resilient organizations.
+                    </p>
+                    <ul className="mt-3 text-sm text-muted-foreground list-disc list-inside space-y-1">
+                      <li>Seed funding to validate product-market fit</li>
+                      <li>Operational support for hiring and marketing</li>
+                      <li>Long-term partnerships that unlock follow-on capital</li>
+                    </ul>
+                    <div className="mt-4">
+                      <a href="#" className="text-sm font-semibold text-primary hover:underline">Read case study →</a>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Transform section - dark background with colorful images */}
+        <section className="py-16 md:py-24 bg-[#0b2545] text-white mt-14">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center max-w-7xl mx-auto">
+              <div>
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
+                  Transform Your Business: Access Capital, Contracts, and Markets with GrantHub's National Network
+                </h2>
+                <p className="text-white/70 mb-6">
+                  Leverage specialized grant programs, procurement pathways, and market access support to grow revenue, win contracts, and scale sustainably. Our network connects you to capital and partners tailored to your business goals.
+                </p>
+                <div className="flex gap-4">
+                  <Button asChild size="default" className="gradient-accent text-white">
+                    <a href="#">Learn how we help</a>
+                  </Button>
+                  <Button asChild variant="outline" size="default" className="border-white text-white">
+                    <a href="#">Contact our network</a>
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <img src={newsImg1} alt="Grant illustration" className="w-full h-40 object-cover rounded-lg shadow-lg" />
+                <img src={newsImg2} alt="Collaboration" className="w-full h-40 object-cover rounded-lg shadow-lg" />
+                <img src={newsImg3} alt="Team photo" className="w-full h-40 object-cover rounded-lg shadow-lg col-span-2 md:col-span-1" />
+                <img src={heroImage} alt="Access to markets" className="w-full h-40 object-cover rounded-lg shadow-lg" />
               </div>
             </div>
           </div>
@@ -121,7 +190,7 @@ const Index = () => {
                 Explore our curated selection of grants available for individuals and startups
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredGrants.map((grant, index) => (
                 <div key={grant.id} className="animate-scale-in" style={{ animationDelay: `${index * 100}ms` }}>
@@ -174,8 +243,8 @@ const Index = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
               {testimonials.map((testimonial, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="bg-card p-6 rounded-lg shadow-custom-md hover:shadow-custom-lg transition-smooth animate-scale-in"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
