@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Search, FileText, Award, ArrowRight, CheckCircle } from "lucide-react";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import GrantCard from "@/components/GrantCard";
+import { getAllGrants } from "@/services/grantsData";
 import heroImage from "@/assets/Hero-Home.png";
 import heroMobile from "@/assets/Hero-mobile.png";
 import newsImg1 from "@/assets/grants-illustration.jpg";
@@ -13,38 +15,14 @@ import newsImg3 from "@/assets/image.png";
 // visual fallback/overlay.
 
 const Index = () => {
-  const featuredGrants = [
-    {
-      id: "1",
-      title: "Innovation Startup Grant",
-      organization: "Tech Foundation",
-      amount: "$50,000 - $100,000",
-      deadline: "Dec 31, 2025",
-      location: "United States",
-      category: "Technology",
-      description: "Supporting innovative tech startups with groundbreaking ideas in AI, blockchain, and sustainable technology.",
-    },
-    {
-      id: "2",
-      title: "Small Business Growth Fund",
-      organization: "Economic Development Agency",
-      amount: "$25,000",
-      deadline: "Nov 15, 2025",
-      location: "Global",
-      category: "Business",
-      description: "Empowering small businesses to scale and create jobs in their communities.",
-    },
-    {
-      id: "3",
-      title: "Social Impact Initiative",
-      organization: "Global Impact Fund",
-      amount: "$75,000",
-      deadline: "Jan 20, 2026",
-      location: "Worldwide",
-      category: "Social Good",
-      description: "Funding projects that create positive social change and community development.",
-    },
-  ];
+  // Get grants from centralized service
+  const allGrants = getAllGrants();
+  const featuredGrants = allGrants.slice(0, 3);
+
+  // small helper: sort grants by deadline (earliest first) for "Closing soon"
+  const soonGrants = [...featuredGrants]
+    .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
+    .slice(0, 3);
 
   const howItWorks = [
     {
@@ -102,10 +80,7 @@ const Index = () => {
             aria-hidden
           />
           {/* Mobile overlay so text remains readable on small screens */}
-          <div
-            className="absolute inset-0 md:hidden pointer-events-none"
-            aria-hidden
-          >
+          <div className="absolute inset-0 md:hidden pointer-events-none" aria-hidden>
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
           </div>
           {/* Reduce overlay opacity so background image remains visible */}
@@ -128,6 +103,18 @@ const Index = () => {
                   <Link to="/apply">Apply Now</Link>
                 </Button>
               </div>
+            </div>
+          </div>
+
+          {/* Mobile inline search (visible on small screens so users can start searching immediately) */}
+          <div className="md:hidden container mx-auto px-4 sm:px-6 lg:px-8 -mt-4">
+            <div className="relative">
+              <input
+                type="search"
+                placeholder="Search grants..."
+                className="w-full px-4 py-3 pr-10 border border-input rounded-md bg-background text-sm focus:outline-none"
+              />
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </div>
           </div>
         </section>
@@ -196,14 +183,31 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Featured Grants */}
+        {/* Featured Grants (with closing-soon box) */}
         <section className="py-16 md:py-24 bg-background">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12 animate-slide-up">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Grant Opportunities</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Explore our curated selection of grants available for individuals and startups
-              </p>
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-start md:justify-between mb-8">
+              <div className="text-left mb-6 md:mb-0 animate-slide-up">
+                <h2 className="text-3xl md:text-4xl font-bold mb-2">Featured Grant Opportunities</h2>
+                <p className="text-muted-foreground text-lg max-w-2xl">
+                  Explore our curated selection of grants available for individuals and startups
+                </p>
+              </div>
+
+              <div className="hidden md:block">
+                <div className="bg-card p-3 rounded-md text-sm w-64">
+                  <h4 className="font-semibold mb-2">Closing soon</h4>
+                  {soonGrants.map((g) => (
+                    <div key={g.id} className="mb-2">
+                      <div className="font-medium">{g.title}</div>
+                      <div className="text-muted-foreground text-sm">{g.deadline}</div>
+                    </div>
+                  ))}
+                  <div className="mt-2">
+                    <Link to="/grants" className="text-primary text-sm font-medium">See all deadlines →</Link>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -219,6 +223,83 @@ const Index = () => {
                 <Link to="/grants">View All Grants <ArrowRight className="ml-2" /></Link>
               </Button>
             </div>
+          </div>
+        </section>
+
+        {/* How to Apply - step-by-step */}
+        <section className="py-12 bg-muted/10">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold">How to Apply</h3>
+              <p className="text-muted-foreground max-w-2xl mx-auto">A quick, step-by-step guide to find, prepare, and submit successful grant applications.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+              <div className="bg-card p-6 rounded-lg text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-primary text-white">
+                  <Search className="h-5 w-5" />
+                </div>
+                <h4 className="font-semibold mb-2">1. Search & Discover</h4>
+                <p className="text-sm text-muted-foreground">Find grants that match your sector and stage.</p>
+              </div>
+
+              <div className="bg-card p-6 rounded-lg text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-primary text-white">
+                  <FileText className="h-5 w-5" />
+                </div>
+                <h4 className="font-semibold mb-2">2. Check Eligibility</h4>
+                <p className="text-sm text-muted-foreground">Confirm requirements and prepare supporting documents.</p>
+              </div>
+
+              <div className="bg-card p-6 rounded-lg text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-primary text-white">
+                  <Award className="h-5 w-5" />
+                </div>
+                <h4 className="font-semibold mb-2">3. Complete Application</h4>
+                <p className="text-sm text-muted-foreground">Follow the application instructions and attach required files.</p>
+              </div>
+
+              <div className="bg-card p-6 rounded-lg text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-primary text-white">
+                  <CheckCircle className="h-5 w-5" />
+                </div>
+                <h4 className="font-semibold mb-2">4. Submit & Follow Up</h4>
+                <p className="text-sm text-muted-foreground">Submit before the deadline and track progress through your dashboard.</p>
+              </div>
+            </div>
+
+            <div className="text-center mt-8">
+              <Button asChild>
+                <Link to="/apply">Start an application</Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section className="py-12 bg-background">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+            <h3 className="text-2xl font-bold mb-6 text-center">Frequently Asked Questions</h3>
+            <Accordion type="single" collapsible defaultValue="item-1">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>Who can apply for grants?</AccordionTrigger>
+                <AccordionContent>
+                  Most grants are open to organizations and individuals that match the eligibility criteria listed on each opportunity. Check the "Eligibility" section on the grant detail page.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-2">
+                <AccordionTrigger>What documents do I need?</AccordionTrigger>
+                <AccordionContent>
+                  Typical documents include a project summary, budget, proof of organization registration, and CVs of key personnel. Exact requirements are listed per grant.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-3">
+                <AccordionTrigger>When will I hear back?</AccordionTrigger>
+                <AccordionContent>
+                  Review timelines vary. If awarded, you will be notified by email; timelines are noted in the grant listing under "Decision date".
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </section>
 

@@ -2,6 +2,7 @@ import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Calendar, DollarSign, MapPin } from "lucide-react";
+import { computeApplicationFee, formatCurrency } from "@/lib/fees";
 import { Link } from "react-router-dom";
 
 interface GrantCardProps {
@@ -16,6 +17,8 @@ interface GrantCardProps {
 }
 
 const GrantCard = ({ id, title, organization, amount, deadline, location, category, description }: GrantCardProps) => {
+  const fee = computeApplicationFee(amount);
+
   return (
     <Card className="gradient-card shadow-custom-md hover:shadow-custom-lg transition-smooth group">
       <CardHeader>
@@ -37,6 +40,10 @@ const GrantCard = ({ id, title, organization, amount, deadline, location, catego
             <span className="font-semibold">{amount}</span>
           </div>
           <div className="flex items-center text-sm">
+            <span className="text-muted-foreground mr-1">Application fee:</span>
+            <span className="font-medium">{formatCurrency(fee)}</span>
+          </div>
+          <div className="flex items-center text-sm">
             <MapPin className="mr-1 h-4 w-4 text-accent" />
             <span>{location}</span>
           </div>
@@ -47,7 +54,7 @@ const GrantCard = ({ id, title, organization, amount, deadline, location, catego
           <Link to={`/grants/${id}`}>View Details</Link>
         </Button>
         <Button asChild variant="outline">
-          <Link to="/apply">Apply Now</Link>
+          <Link to={`/apply/${id}`}>Apply Now</Link>
         </Button>
       </CardFooter>
     </Card>

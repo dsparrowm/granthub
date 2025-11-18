@@ -1,0 +1,120 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+
+const Signup = () => {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const { signup } = useAuth();
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (password !== confirmPassword) {
+            toast.error("Passwords do not match");
+            return;
+        }
+
+        setIsLoading(true);
+
+        try {
+            await signup(email, password, name);
+            toast.success("Account created successfully!");
+            navigate("/");
+        } catch (error) {
+            toast.error("Failed to create account");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className="min-h-screen flex flex-col">
+            <Header />
+
+            <main className="flex-1 bg-background flex items-center justify-center py-12">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <Card className="max-w-md mx-auto">
+                        <CardHeader>
+                            <CardTitle>Create Account</CardTitle>
+                            <CardDescription>
+                                Sign up to start applying for grants
+                            </CardDescription>
+                        </CardHeader>
+                        <form onSubmit={handleSubmit}>
+                            <CardContent className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="name">Full Name</Label>
+                                    <Input
+                                        id="name"
+                                        placeholder="John Doe"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        placeholder="john@example.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="password">Password</Label>
+                                    <Input
+                                        id="password"
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                                    <Input
+                                        id="confirmPassword"
+                                        type="password"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            </CardContent>
+                            <CardFooter className="flex flex-col gap-4">
+                                <Button type="submit" className="w-full" disabled={isLoading}>
+                                    {isLoading ? "Creating account..." : "Sign Up"}
+                                </Button>
+                                <p className="text-sm text-muted-foreground text-center">
+                                    Already have an account?{" "}
+                                    <Link to="/login" className="text-primary hover:underline">
+                                        Log in
+                                    </Link>
+                                </p>
+                            </CardFooter>
+                        </form>
+                    </Card>
+                </div>
+            </main>
+
+            <Footer />
+        </div>
+    );
+};
+
+export default Signup;

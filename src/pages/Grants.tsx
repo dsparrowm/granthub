@@ -5,89 +5,29 @@ import GrantCard from "@/components/GrantCard";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search } from "lucide-react";
+import { getAllGrants } from "@/services/grantsData";
 
 const Grants = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [locationFilter, setLocationFilter] = useState("all");
 
-  const allGrants = [
-    {
-      id: "1",
-      title: "Innovation Startup Grant",
-      organization: "Tech Foundation",
-      amount: "$50,000 - $100,000",
-      deadline: "Dec 31, 2025",
-      location: "United States",
-      category: "Technology",
-      description: "Supporting innovative tech startups with groundbreaking ideas in AI, blockchain, and sustainable technology.",
-    },
-    {
-      id: "2",
-      title: "Small Business Growth Fund",
-      organization: "Economic Development Agency",
-      amount: "$25,000",
-      deadline: "Nov 15, 2025",
-      location: "Global",
-      category: "Business",
-      description: "Empowering small businesses to scale and create jobs in their communities.",
-    },
-    {
-      id: "3",
-      title: "Social Impact Initiative",
-      organization: "Global Impact Fund",
-      amount: "$75,000",
-      deadline: "Jan 20, 2026",
-      location: "Worldwide",
-      category: "Social Good",
-      description: "Funding projects that create positive social change and community development.",
-    },
-    {
-      id: "4",
-      title: "Green Energy Grant",
-      organization: "Environmental Coalition",
-      amount: "$100,000",
-      deadline: "Feb 28, 2026",
-      location: "Europe",
-      category: "Environment",
-      description: "Supporting renewable energy projects and sustainable solutions for climate change.",
-    },
-    {
-      id: "5",
-      title: "Healthcare Innovation Fund",
-      organization: "Health Alliance",
-      amount: "$60,000",
-      deadline: "Dec 15, 2025",
-      location: "United States",
-      category: "Healthcare",
-      description: "Advancing healthcare technology and improving patient outcomes through innovation.",
-    },
-    {
-      id: "6",
-      title: "Education Excellence Grant",
-      organization: "Education First Foundation",
-      amount: "$40,000",
-      deadline: "Nov 30, 2025",
-      location: "Global",
-      category: "Education",
-      description: "Supporting educational initiatives that improve learning outcomes and accessibility.",
-    },
-  ];
+  const allGrants = getAllGrants();
 
   const filteredGrants = allGrants.filter(grant => {
     const matchesSearch = grant.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         grant.organization.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         grant.description.toLowerCase().includes(searchQuery.toLowerCase());
+      grant.organization.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      grant.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = categoryFilter === "all" || grant.category === categoryFilter;
     const matchesLocation = locationFilter === "all" || grant.location === locationFilter;
-    
+
     return matchesSearch && matchesCategory && matchesLocation;
   });
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1 bg-background">
         {/* Page Header */}
         <section className="gradient-hero py-16">
@@ -114,7 +54,7 @@ const Grants = () => {
                   className="pl-10"
                 />
               </div>
-              
+
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                 <SelectTrigger className="w-full md:w-48">
                   <SelectValue placeholder="Category" />

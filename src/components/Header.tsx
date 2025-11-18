@@ -1,11 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
-import { Menu, X, Search, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { Menu, X, Search, ChevronDown, User } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { grants } from "@/data/grants";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isAuthenticated, user } = useAuth();
 
   const mainNavItems = [
     { name: "Grants", path: "/grants", hasDropdown: true },
@@ -13,6 +16,41 @@ const Header = () => {
     { name: "About", path: "/about" },
     { name: "News & Events", path: "/contact" },
   ];
+
+  const [grantsOpen, setGrantsOpen] = useState(false);
+  const grantsRef = useRef<HTMLDivElement | null>(null);
+  const firstDropdownItemRef = useRef<HTMLAnchorElement | null>(null);
+  const [mobileGrantsOpen, setMobileGrantsOpen] = useState(false);
+
+  // Close dropdown when clicking outside and handle Escape key to close
+  useEffect(() => {
+    function handleDocClick(e: MouseEvent) {
+      if (grantsOpen && grantsRef.current && !grantsRef.current.contains(e.target as Node)) {
+        setGrantsOpen(false);
+      }
+    }
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setGrantsOpen(false);
+        setMobileGrantsOpen(false);
+      }
+    }
+
+    document.addEventListener("click", handleDocClick);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("click", handleDocClick);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [grantsOpen]);
+
+  // When the desktop dropdown opens, focus the first item for keyboard users
+  useEffect(() => {
+    if (grantsOpen && firstDropdownItemRef.current) {
+      firstDropdownItemRef.current.focus();
+    }
+  }, [grantsOpen]);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -62,9 +100,28 @@ const Header = () => {
 
             {/* Desktop Right Links */}
             <div className="hidden md:flex items-center gap-4">
-              <Button asChild variant="outline" size="sm">
-                <Link to="/apply">Apply Now</Link>
-              </Button>
+              {isAuthenticated ? (
+                <>
+                  <Button asChild variant="ghost" size="sm">
+                    <Link to="/my-applications">My Applications</Link>
+                  </Button>
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/profile">
+                      <User className="h-4 w-4 mr-2" />
+                      {user?.name || "Profile"}
+                    </Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button asChild variant="ghost" size="sm">
+                    <Link to="/login">Log In</Link>
+                  </Button>
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/signup">Sign Up</Link>
+                  </Button>
+                </>
+              )}
             </div>
 
             {/* Mobile menu button */}
@@ -85,19 +142,69 @@ const Header = () => {
             <Link to="/" className="px-4 py-3 text-sm font-medium text-foreground hover:text-primary transition-colors">
               Home
             </Link>
-            {mainNavItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`px-4 py-3 text-sm font-medium transition-colors flex items-center gap-1 ${isActive(item.path)
-                  ? "text-primary border-b-2 border-primary"
-                  : "text-foreground hover:text-primary"
-                  }`}
-              >
-                {item.name}
-                {item.hasDropdown && <ChevronDown className="h-3 w-3" />}
-              </Link>
-            ))}
+            {mainNavItems.map((item) => {
+              if (item.name === "Grants") {
+                return (
+                  <div key={item.path} className="relative" ref={grantsRef}>
+                    <button
+                      type="button"
+                      aria-haspopup="menu"
+                      aria-expanded={grantsOpen}
+                      aria-controls="grants-dropdown"
+                      onClick={() => setGrantsOpen((s) => !s)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setGrantsOpen((s) => !s);
+                        }
+                      }}
+                      className={`px-4 py-3 text-sm font-medium transition-colors flex items-center gap-1 ${isActive(item.path)
+                        ? "text-primary border-b-2 border-primary"
+                        : "text-foreground hover:text-primary"
+                        }`}
+                    >
+                      {item.name}
+                      <ChevronDown className="h-3 w-3" />
+                    </button>
+
+                    {/* Dropdown panel (desktop only) */}
+                    {grantsOpen && (
+                      <div id="grants-dropdown" className="absolute left-0 mt-2 w-64 bg-card border border-border rounded-md shadow-lg z-40">
+                        <div className="py-2">
+                          {grants.map((g, idx) => (
+                            <Link
+                              key={g.id}
+                              to={`/grants/${g.id}`}
+                              ref={idx === 0 ? firstDropdownItemRef : undefined}
+                              className="block px-4 py-2 text-sm text-foreground hover:bg-muted"
+                              onClick={() => setGrantsOpen(false)}
+                            >
+                              {g.title}
+                            </Link>
+                          ))}
+                          <div className="border-t border-border mt-2 pt-2">
+                            <Link to="/grants" className="block px-4 py-2 text-sm font-medium text-primary hover:underline" onClick={() => setGrantsOpen(false)}>View all grants</Link>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`px-4 py-3 text-sm font-medium transition-colors flex items-center gap-1 ${isActive(item.path)
+                    ? "text-primary border-b-2 border-primary"
+                    : "text-foreground hover:text-primary"
+                    }`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </nav>
@@ -129,19 +236,56 @@ const Header = () => {
             >
               Home
             </Link>
-            {mainNavItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block py-2 px-4 text-sm font-medium rounded-md transition-colors ${isActive(item.path)
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-muted"
-                  }`}
-              >
-                {item.name}
-              </Link>
-            ))}
+            {mainNavItems.map((item) => {
+              if (item.name === "Grants") {
+                return (
+                  <div key={item.path} className="mb-2">
+                    <button
+                      type="button"
+                      onClick={() => setMobileGrantsOpen((s) => !s)}
+                      aria-expanded={mobileGrantsOpen}
+                      className="w-full flex items-center justify-between py-2 px-4 text-sm font-medium rounded-md transition-colors text-foreground hover:bg-muted"
+                    >
+                      <span>{item.name}</span>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${mobileGrantsOpen ? "rotate-180" : ""}`} />
+                    </button>
+
+                    {mobileGrantsOpen && (
+                      <div className="pl-4 mt-2">
+                        {grants.map((g) => (
+                          <Link
+                            key={g.id}
+                            to={`/grants/${g.id}`}
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setMobileGrantsOpen(false);
+                            }}
+                            className="block py-2 px-4 text-sm font-medium rounded-md transition-colors text-foreground hover:bg-muted"
+                          >
+                            {g.title}
+                          </Link>
+                        ))}
+                        <Link to="/grants" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-4 text-sm font-medium text-primary">View all grants</Link>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block py-2 px-4 text-sm font-medium rounded-md transition-colors ${isActive(item.path)
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground hover:bg-muted"
+                    }`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
             <div className="mt-4 pt-4 border-t border-border">
               <Button asChild className="w-full" size="sm">
                 <Link to="/apply" onClick={() => setMobileMenuOpen(false)}>Apply Now</Link>

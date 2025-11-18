@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -8,15 +9,85 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle, Upload } from "lucide-react";
+import { CheckCircle, Upload, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { getGrantById } from "@/services/grantsData";
+import { computeApplicationFee, formatCurrency } from "@/lib/fees";
+import { useAuth } from "@/contexts/AuthContext";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 const Apply = () => {
+  const { grantId } = useParams();
+  const navigate = useNavigate();
+  const { user, token, isAuthenticated } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 4;
+  const totalSteps = 5;
   const progress = (currentStep / totalSteps) * 100;
 
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      toast.error("Please login to apply for grants");
+      navigate("/login");
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Fetch grant data
+  const grant = grantId ? getGrantById(grantId) : null;
+
+  // Redirect if grant not found
+  useEffect(() => {
+    if (grantId && !grant) {
+      toast.error("Grant not found");
+      navigate("/grants");
+    }
+  }, [grantId, grant, navigate]);
+
+  // Form state
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: user?.email || "",
+    phone: "",
+    organization: user?.organization || "",
+    position: "",
+    projectTitle: "",
+    projectDescription: "",
+    requestedAmount: "",
+    timeline: "",
+  });
+
+  const estimatedFee = formData.requestedAmount ? computeApplicationFee(formData.requestedAmount) : 0;
+
+  // Eligibility state - users must confirm all to proceed
+  const [eligibility, setEligibility] = useState({
+    registeredUnder3Years: false,
+    techFocused: false,
+    clearInnovation: false,
+    atLeastTwoFounders: false,
+    basedInUS: false,
+  });
+
+  const isEligible = Object.values(eligibility).every(Boolean);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.id]: e.target.value
+    }));
+  };
+
+  if (!grant) {
+    return null; // Will redirect in useEffect
+  }
   const handleNext = () => {
+    // prevent moving past eligibility if not eligible
+    if (currentStep === 1 && !isEligible) {
+      toast.error("You must confirm all eligibility criteria before proceeding.");
+      return;
+    }
+
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
       window.scrollTo(0, 0);
@@ -30,15 +101,54 @@ const Apply = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Application submitted successfully! We'll review your submission and get back to you soon.");
+
+    if (!token) {
+      toast.error("Authentication required");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const applicationData = {
+        applicantName: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        organization: formData.organization,
+        projectTitle: formData.projectTitle,
+        projectDescription: formData.projectDescription,
+        requestedAmount: parseFloat(formData.requestedAmount),
+      };
+
+      // Call API
+      const response = await fetch(`${API_URL}/api/grants/${grantId}/apply`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(applicationData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Application submission failed");
+      }
+
+      const result = await response.json();
+
+      // Navigate to success page
+      navigate(`/application/${result.id}/success`);
+    } catch (error) {
+      console.error("Application error:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to submit application. Please try again.");
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1 bg-background">
         {/* Header */}
         <section className="gradient-hero py-12">
@@ -47,7 +157,10 @@ const Apply = () => {
               Grant Application
             </h1>
             <p className="text-primary-foreground/90 text-lg max-w-2xl mx-auto">
-              Complete your application step by step
+              Applying for: <strong>{grant.title}</strong>
+            </p>
+            <p className="text-primary-foreground/80 text-sm mt-2">
+              {grant.organization}
             </p>
           </div>
         </section>
@@ -61,13 +174,12 @@ const Apply = () => {
                 <span className="text-sm text-muted-foreground">{Math.round(progress)}% Complete</span>
               </div>
               <Progress value={progress} className="h-2" />
-              
+
               <div className="flex justify-between mt-4">
-                {["Personal Info", "Project Details", "Documents", "Review"].map((step, index) => (
+                {["Eligibility", "Personal Info", "Project Details", "Documents", "Review"].map((step, index) => (
                   <div key={index} className="flex flex-col items-center">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      index + 1 <= currentStep ? "bg-secondary text-secondary-foreground" : "bg-muted text-muted-foreground"
-                    }`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${index + 1 <= currentStep ? "bg-secondary text-secondary-foreground" : "bg-muted text-muted-foreground"
+                      }`}>
                       {index + 1 < currentStep ? <CheckCircle className="h-5 w-5" /> : index + 1}
                     </div>
                     <span className="text-xs mt-2 hidden sm:block">{step}</span>
@@ -84,52 +196,139 @@ const Apply = () => {
             <div className="max-w-3xl mx-auto">
               <form onSubmit={handleSubmit} className="bg-card p-8 rounded-lg shadow-custom-md">
                 {/* Step 1: Personal Information */}
+                {/* Step 0: Eligibility Check */}
                 {currentStep === 1 && (
                   <div className="space-y-6 animate-fade-in">
+                    <h2 className="text-2xl font-bold mb-6">Eligibility Check</h2>
+
+                    <p className="text-sm text-muted-foreground">Please confirm the following to make sure you are eligible to apply. If you do not meet these criteria, do not proceed — applying may require a non-refundable application fee.</p>
+
+                    <div className="space-y-3 mt-4">
+                      <div className="flex items-start">
+                        <Checkbox id="registeredUnder3Years" checked={eligibility.registeredUnder3Years} onCheckedChange={(val) => setEligibility(prev => ({ ...prev, registeredUnder3Years: Boolean(val) }))} />
+                        <Label htmlFor="registeredUnder3Years" className="ml-3 text-sm">Organization registered less than 3 years</Label>
+                      </div>
+
+                      <div className="flex items-start">
+                        <Checkbox id="techFocused" checked={eligibility.techFocused} onCheckedChange={(val) => setEligibility(prev => ({ ...prev, techFocused: Boolean(val) }))} />
+                        <Label htmlFor="techFocused" className="ml-3 text-sm">Project is technology-focused</Label>
+                      </div>
+
+                      <div className="flex items-start">
+                        <Checkbox id="clearInnovation" checked={eligibility.clearInnovation} onCheckedChange={(val) => setEligibility(prev => ({ ...prev, clearInnovation: Boolean(val) }))} />
+                        <Label htmlFor="clearInnovation" className="ml-3 text-sm">Project shows a clear innovation component</Label>
+                      </div>
+
+                      <div className="flex items-start">
+                        <Checkbox id="atLeastTwoFounders" checked={eligibility.atLeastTwoFounders} onCheckedChange={(val) => setEligibility(prev => ({ ...prev, atLeastTwoFounders: Boolean(val) }))} />
+                        <Label htmlFor="atLeastTwoFounders" className="ml-3 text-sm">Team has at least two founders</Label>
+                      </div>
+
+                      <div className="flex items-start">
+                        <Checkbox id="basedInUS" checked={eligibility.basedInUS} onCheckedChange={(val) => setEligibility(prev => ({ ...prev, basedInUS: Boolean(val) }))} />
+                        <Label htmlFor="basedInUS" className="ml-3 text-sm">Based in the United States</Label>
+                      </div>
+
+                      {!isEligible && (
+                        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-3 rounded-md text-sm">
+                          Based on your answers, you are currently marked as not eligible. If you believe this is an error, contact our team or review the eligibility requirements for the specific grant before applying.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 1: Personal Information */}
+                {currentStep === 2 && (
+                  <div className="space-y-6 animate-fade-in">
                     <h2 className="text-2xl font-bold mb-6">Personal Information</h2>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="firstName">First Name *</Label>
-                        <Input id="firstName" placeholder="John" required />
+                        <Input
+                          id="firstName"
+                          placeholder="John"
+                          value={formData.firstName}
+                          onChange={handleInputChange}
+                          required
+                        />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="lastName">Last Name *</Label>
-                        <Input id="lastName" placeholder="Doe" required />
+                        <Input
+                          id="lastName"
+                          placeholder="Doe"
+                          value={formData.lastName}
+                          onChange={handleInputChange}
+                          required
+                        />
                       </div>
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="email">Email Address *</Label>
-                      <Input id="email" type="email" placeholder="john@example.com" required />
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="john@example.com"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                      />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number *</Label>
-                      <Input id="phone" type="tel" placeholder="+1 (555) 000-0000" required />
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="+1 (555) 000-0000"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        required
+                      />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="organization">Organization/Company *</Label>
-                      <Input id="organization" placeholder="Your Company Name" required />
+                      <Input
+                        id="organization"
+                        placeholder="Your Company Name"
+                        value={formData.organization}
+                        onChange={handleInputChange}
+                        required
+                      />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="position">Your Position *</Label>
-                      <Input id="position" placeholder="e.g., Founder, CEO" required />
+                      <Input
+                        id="position"
+                        placeholder="e.g., Founder, CEO"
+                        value={formData.position}
+                        onChange={handleInputChange}
+                        required
+                      />
                     </div>
                   </div>
                 )}
 
                 {/* Step 2: Project Details */}
-                {currentStep === 2 && (
+                {currentStep === 3 && (
                   <div className="space-y-6 animate-fade-in">
                     <h2 className="text-2xl font-bold mb-6">Project Details</h2>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="projectTitle">Project Title *</Label>
-                      <Input id="projectTitle" placeholder="Your innovative project" required />
+                      <Input
+                        id="projectTitle"
+                        placeholder="Your innovative project"
+                        value={formData.projectTitle}
+                        onChange={handleInputChange}
+                        required
+                      />
                     </div>
 
                     <div className="space-y-2">
@@ -150,32 +349,51 @@ const Apply = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="fundingAmount">Requested Funding Amount *</Label>
-                      <Input id="fundingAmount" type="number" placeholder="50000" required />
+                      <Label htmlFor="requestedAmount">Requested Funding Amount *</Label>
+                      <Input
+                        id="requestedAmount"
+                        type="number"
+                        placeholder="50000"
+                        value={formData.requestedAmount}
+                        onChange={handleInputChange}
+                        required
+                      />
+                      {formData.requestedAmount && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
+                          <AlertCircle className="h-4 w-4" />
+                          <span>Estimated application fee: <strong className="text-primary">{formatCurrency(estimatedFee)}</strong></span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="projectSummary">Project Summary (max 500 words) *</Label>
-                      <Textarea 
-                        id="projectSummary" 
-                        placeholder="Describe your project, its goals, and expected impact..." 
+                      <Label htmlFor="projectDescription">Project Summary (max 500 words) *</Label>
+                      <Textarea
+                        id="projectDescription"
+                        placeholder="Describe your project, its goals, and expected impact..."
                         className="min-h-[150px]"
-                        required 
+                        value={formData.projectDescription}
+                        onChange={handleInputChange}
+                        required
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="projectTimeline">Project Timeline *</Label>
-                      <Input id="projectTimeline" placeholder="e.g., 12 months" required />
+                      <Label htmlFor="timeline">Project Timeline *</Label>
+                      <Input
+                        id="timeline"
+                        placeholder="e.g., 12 months"
+                        value={formData.timeline}
+                        onChange={handleInputChange}
+                        required
+                      />
                     </div>
                   </div>
-                )}
-
-                {/* Step 3: Documents */}
-                {currentStep === 3 && (
+                )}                {/* Step 3: Documents */}
+                {currentStep === 4 && (
                   <div className="space-y-6 animate-fade-in">
                     <h2 className="text-2xl font-bold mb-6">Required Documents</h2>
-                    
+
                     <div className="space-y-4">
                       <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
                         <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
@@ -208,10 +426,10 @@ const Apply = () => {
                 )}
 
                 {/* Step 4: Review */}
-                {currentStep === 4 && (
+                {currentStep === 5 && (
                   <div className="space-y-6 animate-fade-in">
                     <h2 className="text-2xl font-bold mb-6">Review & Submit</h2>
-                    
+
                     <div className="space-y-4">
                       <div className="bg-muted/50 p-4 rounded-lg">
                         <h3 className="font-semibold mb-2">Personal Information</h3>
@@ -235,6 +453,11 @@ const Apply = () => {
                         I certify that all information provided is accurate and complete. I understand that false information may result in disqualification. I agree to the terms and conditions of the grant program.
                       </Label>
                     </div>
+
+                    <div className="bg-muted/50 p-4 rounded-lg mt-4 text-sm">
+                      <p className="font-medium mb-2">Important policy summary</p>
+                      <p className="text-muted-foreground">If your application is successful, recipients are asked to return 30% of the grant amount after two years so that we can support more projects in the future. We also collect an application fee (calculated from the requested amount) which covers our operational costs — staff, platform maintenance, and processing. Grants are awarded by funders (governments, foundations, or private donors); our platform facilitates awarding and administration.</p>
+                    </div>
                   </div>
                 )}
 
@@ -248,7 +471,7 @@ const Apply = () => {
                   >
                     Previous
                   </Button>
-                  
+
                   {currentStep < totalSteps ? (
                     <Button type="button" onClick={handleNext}>
                       Next Step

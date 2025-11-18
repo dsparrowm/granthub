@@ -150,6 +150,22 @@ const About = () => {
           </div>
         </section>
 
+        {/* How Funding Works */}
+        <section className="py-12 bg-muted/10">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+            <h2 className="text-3xl font-bold mb-4">How funding works on our platform</h2>
+            <p className="text-muted-foreground leading-relaxed mb-4">
+              Our platform connects funders (governments, foundations, and private donors) with applicants. We do not provide grant money ourselves — we facilitate applications, reviews, and award administration on behalf of funders.
+            </p>
+            <p className="text-muted-foreground leading-relaxed mb-4">
+              To help sustain the platform and cover operational costs (staff, platform maintenance, application processing), we collect a small application fee which is calculated based on the requested grant amount. This fee is used only to run the service and is not part of the grant funding.
+            </p>
+            <p className="text-muted-foreground leading-relaxed">
+              Additionally, recipients who receive grant funding are asked to return 30% of the grant amount after two years so that the returned funds can be re-distributed to new grantees. This policy helps create a revolving pool of funding and extend the impact of each grant cycle.
+            </p>
+          </div>
+        </section>
+
         {/* Stats */}
         <section className="py-16 gradient-accent">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">

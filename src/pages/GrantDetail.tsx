@@ -1,52 +1,36 @@
-import { useParams, Link } from "react-router-dom";
+import { useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, DollarSign, MapPin, Building2, Users, FileText, CheckCircle } from "lucide-react";
+import { computeApplicationFee, formatCurrency } from "@/lib/fees";
+import { getGrantById } from "@/services/grantsData";
+import EligibilityModal from "@/components/EligibilityModal";
+import { toast } from "sonner";
 
 const GrantDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const [eligibilityModalOpen, setEligibilityModalOpen] = useState(false);
 
-  // Mock grant data - in a real app, this would be fetched based on the ID
-  const grant = {
-    id: id,
-    title: "Innovation Startup Grant",
-    organization: "Tech Foundation",
-    amount: "$50,000 - $100,000",
-    deadline: "December 31, 2025",
-    location: "United States",
-    category: "Technology",
-    description: "Supporting innovative tech startups with groundbreaking ideas in AI, blockchain, and sustainable technology.",
-    fullDescription: "The Innovation Startup Grant is designed to support early-stage technology companies that are developing groundbreaking solutions in artificial intelligence, blockchain technology, and sustainable tech. We believe in empowering entrepreneurs who are committed to making a positive impact through innovation.",
-    eligibility: [
-      "Registered startup less than 3 years old",
-      "Technology-focused business model",
-      "Clear innovation component",
-      "Team of at least 2 founders",
-      "Based in the United States",
-    ],
-    requirements: [
-      "Detailed business plan",
-      "Financial projections for 2 years",
-      "Team member resumes",
-      "Proof of company registration",
-      "Pitch deck (max 15 slides)",
-      "Letter of recommendation",
-    ],
-    benefits: [
-      "Non-dilutive funding",
-      "Mentorship from industry experts",
-      "Access to investor network",
-      "Marketing and PR support",
-      "Co-working space access",
-    ],
-  };
+  // Fetch grant data from centralized service
+  const grant = id ? getGrantById(id) : null;
+
+  if (!grant) {
+    toast.error("Grant not found");
+    navigate("/grants");
+    return null;
+  }
+
+  // compute fee
+  const fee = computeApplicationFee(grant.amount);
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1 bg-background">
         {/* Header */}
         <section className="gradient-hero py-12">
@@ -59,7 +43,7 @@ const GrantDetail = () => {
               <p className="text-primary-foreground/90 text-lg mb-6">
                 {grant.organization}
               </p>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="flex items-center text-primary-foreground">
                   <DollarSign className="mr-2 h-5 w-5" />
@@ -155,6 +139,21 @@ const GrantDetail = () => {
 
               {/* Sidebar */}
               <div className="space-y-6">
+                {/* Eligibility Check CTA */}
+                <div className="bg-secondary/10 border-2 border-secondary rounded-lg p-6">
+                  <h3 className="text-xl font-bold mb-3">Check Your Eligibility First</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Avoid paying the application fee if you don't meet the requirements. Check your eligibility in seconds.
+                  </p>
+                  <Button
+                    onClick={() => setEligibilityModalOpen(true)}
+                    variant="outline"
+                    className="w-full mb-3 border-secondary text-secondary hover:bg-secondary/10"
+                  >
+                    Check Eligibility
+                  </Button>
+                </div>
+
                 {/* Apply CTA */}
                 <div className="bg-card p-6 rounded-lg shadow-custom-md sticky top-20">
                   <h3 className="text-xl font-bold mb-4">Ready to Apply?</h3>
@@ -162,7 +161,7 @@ const GrantDetail = () => {
                     Start your application now and take the first step towards funding your innovation.
                   </p>
                   <Button asChild className="w-full mb-3" size="lg">
-                    <Link to="/apply">Apply Now</Link>
+                    <Link to={`/apply/${grant.id}`}>Apply Now</Link>
                   </Button>
                   <Button asChild variant="outline" className="w-full">
                     <Link to="/grants">Browse More Grants</Link>
@@ -183,7 +182,15 @@ const GrantDetail = () => {
                     </div>
                     <div>
                       <dt className="text-muted-foreground">Application Fee</dt>
-                      <dd className="font-medium">None</dd>
+                      <dd className="font-medium">{formatCurrency(fee)}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-muted-foreground">Repayment Policy</dt>
+                      <dd className="font-medium">Recipients who receive a grant are asked to return 30% of the grant amount after 2 years to help fund future grantees.</dd>
+                    </div>
+                    <div>
+                      <dt className="text-muted-foreground">Platform Fees</dt>
+                      <dd className="font-medium">We charge an application fee (shown above) which covers our operational costs — staff, platform maintenance, and application processing. Grant funds themselves are provided by governments, foundations, or private donors; our platform only facilitates awarding and administration.</dd>
                     </div>
                     <div>
                       <dt className="text-muted-foreground">Renewability</dt>
@@ -196,6 +203,13 @@ const GrantDetail = () => {
           </div>
         </section>
       </main>
+
+      <EligibilityModal
+        open={eligibilityModalOpen}
+        onOpenChange={setEligibilityModalOpen}
+        grantId={grant.id}
+        eligibilityCriteria={grant.eligibility || []}
+      />
 
       <Footer />
     </div>

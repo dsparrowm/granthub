@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String        @map("password_hash")
+  name         String
+  organization String?
+  role         String        @default("applicant")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  applications Application[]
+
+  @@map("users")
+}
+
+model Grant {
+  id               String        @id @default(uuid())
+  title            String
+  description      String
+  amount           Int // amount in cents
+  deadline         DateTime
+  eligibility      String[]
+  category         String
+  organization     String
+  imageUrl         String?       @map("image_url")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  applications     Application[]
+
+  @@map("grants")
+}
+
+model Application {
+  id                  String   @id @default(uuid())
+  grantId             String   @map("grant_id")
+  userId              String   @map("user_id")
+  applicantName       String   @map("applicant_name")
+  email               String
+  organization        String
+  projectTitle        String   @map("project_title")
+  projectDescription  String   @map("project_description")
+  requestedAmount     Int      @map("requested_amount") // amount in cents
+  applicationFeeCents Int      @map("application_fee_cents")
+  status              String   @default("pending")
+  submittedAt         DateTime @default(now()) @map("submitted_at")
+
+  grant Grant @relation(fields: [grantId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("applications")
+}
