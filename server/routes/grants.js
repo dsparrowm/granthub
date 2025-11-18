@@ -197,4 +197,82 @@ router.get('/applications/:id', authenticateToken, async (req, res) => {
     }
 });
 
+// Admin routes
+// GET /api/admin/applications - Get all applications (admin only)
+router.get('/admin/applications', authenticateToken, async (req, res) => {
+    try {
+        // Check if user is admin
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
+        }
+
+        const applications = await prisma.application.findMany({
+            include: {
+                grant: {
+                    select: {
+                        title: true,
+                        organization: true,
+                        amount: true
+                    }
+                },
+                user: {
+                    select: {
+                        name: true,
+                        email: true
+                    }
+                }
+            },
+            orderBy: { submittedAt: 'desc' }
+        });
+
+        res.json(applications);
+    } catch (err) {
+        console.error('Error fetching applications:', err);
+        res.status(500).json({ error: 'Failed to fetch applications' });
+    }
+});
+
+// PATCH /api/admin/applications/:id/status - Update application status (admin only)
+router.patch('/admin/applications/:id/status', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    try {
+        // Check if user is admin
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
+        }
+
+        // Validate status
+        const validStatuses = ['submitted', 'under_review', 'approved', 'rejected'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ error: 'Invalid status' });
+        }
+
+        const application = await prisma.application.update({
+            where: { id },
+            data: { status },
+            include: {
+                grant: {
+                    select: {
+                        title: true,
+                        organization: true
+                    }
+                },
+                user: {
+                    select: {
+                        name: true,
+                        email: true
+                    }
+                }
+            }
+        });
+
+        res.json(application);
+    } catch (err) {
+        console.error('Error updating application status:', err);
+        res.status(500).json({ error: 'Failed to update application status' });
+    }
+});
+
 module.exports = router;

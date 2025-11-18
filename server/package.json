@@ -10,7 +10,9 @@
         "db:push": "prisma db push",
         "db:migrate": "prisma migrate dev",
         "db:studio": "prisma studio",
-        "db:seed": "node prisma/seed.js"
+        "db:seed": "node prisma/seed.js",
+        "create-admin": "node scripts/create-admin.js",
+        "make-admin": "node scripts/make-user-admin.js"
     },
     "dependencies": {
         "@prisma/client": "^5.7.0",

@@ -105,6 +105,11 @@ const Header = () => {
                   <Button asChild variant="ghost" size="sm">
                     <Link to="/my-applications">My Applications</Link>
                   </Button>
+                  {user?.role === "admin" && (
+                    <Button asChild variant="ghost" size="sm">
+                      <Link to="/admin">Admin Dashboard</Link>
+                    </Button>
+                  )}
                   <Button asChild variant="outline" size="sm">
                     <Link to="/profile">
                       <User className="h-4 w-4 mr-2" />

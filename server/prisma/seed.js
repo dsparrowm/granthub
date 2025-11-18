@@ -4,99 +4,104 @@ const prisma = new PrismaClient();
 const sampleGrants = [
     {
         id: '1',
-        title: 'Small Business Innovation Grant',
-        description: 'Support for innovative small businesses to develop new products or services. This grant provides funding for research, development, and market testing.',
-        amount: 5000000, // $50,000 in cents
-        deadline: new Date('2024-12-31'),
+        title: 'Innovation Startup Grant',
+        description: 'Support for innovative tech startups with groundbreaking ideas in AI, blockchain, and sustainable technology. Designed for early-stage companies ready to scale.',
+        amount: 75000000, // $750,000 in cents
+        deadline: new Date('2025-12-31'),
         eligibility: [
-            'Must be a registered small business',
-            'Annual revenue under $1M',
-            'Developing an innovative product or service',
+            'Registered startup less than 3 years old',
+            'Technology-focused business model',
+            'Clear innovation component',
+            'Team of at least 2 founders',
             'Based in the United States'
         ],
-        category: 'Business',
-        organization: 'Small Business Administration',
+        category: 'Technology',
+        organization: 'Tech Foundation',
         imageUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800'
     },
     {
         id: '2',
-        title: 'Education Technology Grant',
-        description: 'Funding for educational institutions to implement technology solutions that enhance learning outcomes and student engagement.',
-        amount: 2500000, // $25,000 in cents
-        deadline: new Date('2024-11-30'),
+        title: 'Business Scale-Up Fund',
+        description: 'Empowering businesses to scale operations, expand market presence, and create jobs. Substantial capital for established businesses ready to grow.',
+        amount: 37500000, // $375,000 in cents
+        deadline: new Date('2025-11-15'),
         eligibility: [
-            'Must be an accredited educational institution',
-            'Serving K-12 or higher education',
-            'Clear implementation plan',
-            'Demonstrated technology need'
+            'Operating business for at least 2 years',
+            'Clear growth plan',
+            'Positive revenue history',
+            'Job creation commitment'
         ],
-        category: 'Education',
-        organization: 'Department of Education',
-        imageUrl: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800'
+        category: 'Business',
+        organization: 'Economic Development Agency',
+        imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800'
     },
     {
         id: '3',
-        title: 'Community Development Grant',
-        description: 'Support for nonprofit organizations working to improve community infrastructure, services, and quality of life.',
-        amount: 7500000, // $75,000 in cents
-        deadline: new Date('2025-01-15'),
+        title: 'Social Impact Initiative',
+        description: 'Funding large-scale projects that create transformative social change and community development with measurable, sustainable impact.',
+        amount: 112500000, // $1,125,000 in cents
+        deadline: new Date('2026-01-20'),
         eligibility: [
-            'Must be a registered 501(c)(3) nonprofit',
-            'Serving a defined community',
-            'At least 2 years of operation',
-            'Clear community impact plan'
+            'Non-profit or social enterprise',
+            'Clear social impact mission',
+            'Measurable outcomes',
+            'Community support',
+            'Track record of successful programs'
         ],
-        category: 'Community',
-        organization: 'Community Development Foundation',
+        category: 'Social Good',
+        organization: 'Global Impact Fund',
         imageUrl: 'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=800'
     },
     {
         id: '4',
-        title: 'Research & Development Grant',
-        description: 'Funding for scientific research projects with potential for significant impact in healthcare, environment, or technology.',
-        amount: 10000000, // $100,000 in cents
-        deadline: new Date('2025-02-28'),
+        title: 'Green Energy Grant',
+        description: 'Supporting large-scale renewable energy projects and sustainable solutions for climate change with significant environmental impact potential.',
+        amount: 175000000, // $1,750,000 in cents
+        deadline: new Date('2026-02-28'),
         eligibility: [
-            'Must have a PhD or equivalent research credentials',
-            'Affiliated with a research institution',
-            'Novel research approach',
-            'Clear methodology and timeline'
+            'Focus on renewable energy or sustainability',
+            'Environmental impact assessment',
+            'Technical feasibility demonstrated',
+            'Based in or serving European markets',
+            'Proven technical team'
         ],
-        category: 'Research',
-        organization: 'National Science Foundation',
-        imageUrl: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800'
+        category: 'Environment',
+        organization: 'Environmental Coalition',
+        imageUrl: 'https://images.unsplash.com/photo-1473186578172-c141e6798cf4?w=800'
     },
     {
         id: '5',
-        title: 'Arts & Culture Grant',
-        description: 'Support for artists, cultural organizations, and creative projects that enrich community cultural life.',
-        amount: 1500000, // $15,000 in cents
-        deadline: new Date('2024-12-15'),
+        title: 'Healthcare Innovation Fund',
+        description: 'Advancing healthcare technology and improving patient outcomes through major innovation initiatives at scale.',
+        amount: 90000000, // $900,000 in cents
+        deadline: new Date('2025-12-15'),
         eligibility: [
-            'Individual artist or arts organization',
-            'Demonstrated artistic merit',
-            'Community engagement component',
-            'Budget and project timeline'
+            'Healthcare-focused innovation',
+            'Clear patient benefit',
+            'Regulatory compliance path',
+            'Medical advisory board',
+            'Clinical validation completed'
         ],
-        category: 'Arts',
-        organization: 'National Endowment for the Arts',
-        imageUrl: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=800'
+        category: 'Healthcare',
+        organization: 'Health Alliance',
+        imageUrl: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800'
     },
     {
         id: '6',
-        title: 'Environmental Sustainability Grant',
-        description: 'Funding for projects focused on environmental conservation, renewable energy, or sustainable practices.',
-        amount: 5000000, // $50,000 in cents
-        deadline: new Date('2025-03-31'),
+        title: 'Education Transformation Grant',
+        description: 'Supporting large-scale educational initiatives that transform learning outcomes and accessibility with measurable impact.',
+        amount: 60000000, // $600,000 in cents
+        deadline: new Date('2025-11-30'),
         eligibility: [
-            'Environmental focus',
-            'Measurable sustainability impact',
-            'Implementation plan',
-            'Community or organizational support'
+            'Education-focused mission',
+            'Demonstrated impact on learning',
+            'Scalability potential',
+            'Educator involvement',
+            'Proven track record'
         ],
-        category: 'Environment',
-        organization: 'Environmental Protection Agency',
-        imageUrl: 'https://images.unsplash.com/photo-1473186578172-c141e6798cf4?w=800'
+        category: 'Education',
+        organization: 'Education First Foundation',
+        imageUrl: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800'
     }
 ];
 

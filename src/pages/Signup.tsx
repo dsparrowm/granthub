@@ -31,10 +31,12 @@ const Signup = () => {
         try {
             await signup(email, password, name);
             toast.success("Account created successfully!");
-            navigate("/");
+            // Use setTimeout to ensure state updates have propagated
+            setTimeout(() => {
+                navigate("/my-applications");
+            }, 100);
         } catch (error) {
             toast.error("Failed to create account");
-        } finally {
             setIsLoading(false);
         }
     };

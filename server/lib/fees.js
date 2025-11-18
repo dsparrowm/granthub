@@ -4,11 +4,20 @@
 
 function computeApplicationFeeDollars(amountDollars) {
     if (typeof amountDollars !== 'number' || isNaN(amountDollars) || amountDollars <= 0) return 0;
-    const rate = 0.005; // 0.5%
-    const raw = amountDollars * rate;
-    const min = 25; // $25
-    const max = 1000; // $1000
-    const fee = Math.round(Math.min(Math.max(raw, min), max));
+
+    // Tiered structure for grants $250K - $5M
+    let fee;
+
+    if (amountDollars < 500000) {
+        fee = 500; // $500 for grants $250K-$500K
+    } else if (amountDollars < 1000000) {
+        fee = 750; // $750 for grants $500K-$1M
+    } else if (amountDollars < 2500000) {
+        fee = 1250; // $1,250 for grants $1M-$2.5M
+    } else {
+        fee = 2000; // $2,000 for grants $2.5M-$5M
+    }
+
     return fee; // fee in whole dollars
 }
 

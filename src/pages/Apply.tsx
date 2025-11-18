@@ -61,15 +61,12 @@ const Apply = () => {
   const estimatedFee = formData.requestedAmount ? computeApplicationFee(formData.requestedAmount) : 0;
 
   // Eligibility state - users must confirm all to proceed
-  const [eligibility, setEligibility] = useState({
-    registeredUnder3Years: false,
-    techFocused: false,
-    clearInnovation: false,
-    atLeastTwoFounders: false,
-    basedInUS: false,
-  });
+  // Initialize with false for each eligibility criterion from the grant
+  const [eligibility, setEligibility] = useState<Record<number, boolean>>({});
 
-  const isEligible = Object.values(eligibility).every(Boolean);
+  const isEligible = grant?.eligibility
+    ? grant.eligibility.every((_, index) => eligibility[index] === true)
+    : false;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({
@@ -204,32 +201,20 @@ const Apply = () => {
                     <p className="text-sm text-muted-foreground">Please confirm the following to make sure you are eligible to apply. If you do not meet these criteria, do not proceed — applying may require a non-refundable application fee.</p>
 
                     <div className="space-y-3 mt-4">
-                      <div className="flex items-start">
-                        <Checkbox id="registeredUnder3Years" checked={eligibility.registeredUnder3Years} onCheckedChange={(val) => setEligibility(prev => ({ ...prev, registeredUnder3Years: Boolean(val) }))} />
-                        <Label htmlFor="registeredUnder3Years" className="ml-3 text-sm">Organization registered less than 3 years</Label>
-                      </div>
+                      {grant.eligibility?.map((criterion, index) => (
+                        <div key={index} className="flex items-start">
+                          <Checkbox
+                            id={`eligibility-${index}`}
+                            checked={eligibility[index] || false}
+                            onCheckedChange={(val) => setEligibility(prev => ({ ...prev, [index]: Boolean(val) }))}
+                          />
+                          <Label htmlFor={`eligibility-${index}`} className="ml-3 text-sm cursor-pointer">
+                            {criterion}
+                          </Label>
+                        </div>
+                      ))}
 
-                      <div className="flex items-start">
-                        <Checkbox id="techFocused" checked={eligibility.techFocused} onCheckedChange={(val) => setEligibility(prev => ({ ...prev, techFocused: Boolean(val) }))} />
-                        <Label htmlFor="techFocused" className="ml-3 text-sm">Project is technology-focused</Label>
-                      </div>
-
-                      <div className="flex items-start">
-                        <Checkbox id="clearInnovation" checked={eligibility.clearInnovation} onCheckedChange={(val) => setEligibility(prev => ({ ...prev, clearInnovation: Boolean(val) }))} />
-                        <Label htmlFor="clearInnovation" className="ml-3 text-sm">Project shows a clear innovation component</Label>
-                      </div>
-
-                      <div className="flex items-start">
-                        <Checkbox id="atLeastTwoFounders" checked={eligibility.atLeastTwoFounders} onCheckedChange={(val) => setEligibility(prev => ({ ...prev, atLeastTwoFounders: Boolean(val) }))} />
-                        <Label htmlFor="atLeastTwoFounders" className="ml-3 text-sm">Team has at least two founders</Label>
-                      </div>
-
-                      <div className="flex items-start">
-                        <Checkbox id="basedInUS" checked={eligibility.basedInUS} onCheckedChange={(val) => setEligibility(prev => ({ ...prev, basedInUS: Boolean(val) }))} />
-                        <Label htmlFor="basedInUS" className="ml-3 text-sm">Based in the United States</Label>
-                      </div>
-
-                      {!isEligible && (
+                      {Object.keys(eligibility).length > 0 && !isEligible && (
                         <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-3 rounded-md text-sm">
                           Based on your answers, you are currently marked as not eligible. If you believe this is an error, contact our team or review the eligibility requirements for the specific grant before applying.
                         </div>

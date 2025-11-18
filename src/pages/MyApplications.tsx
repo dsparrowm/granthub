@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -6,36 +6,59 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { Calendar, DollarSign } from "lucide-react";
+import { toast } from "sonner";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+
+interface Application {
+    id: string;
+    status: string;
+    requestedAmount: number;
+    submittedAt: string;
+    grant: {
+        title: string;
+        organization: string;
+        amount: string;
+    };
+}
 
 const MyApplications = () => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, token } = useAuth();
     const navigate = useNavigate();
+    const [applications, setApplications] = useState<Application[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!isAuthenticated) {
             navigate("/login");
+            return;
         }
-    }, [isAuthenticated, navigate]);
 
-    // Mock applications data - would come from API
-    const applications = [
-        {
-            id: "app-1",
-            grantTitle: "Innovation Startup Grant",
-            organization: "Tech Foundation",
-            amount: "$75,000",
-            submittedDate: "Nov 1, 2025",
-            status: "under_review",
-        },
-        {
-            id: "app-2",
-            grantTitle: "Small Business Growth Fund",
-            organization: "Economic Development Agency",
-            amount: "$25,000",
-            submittedDate: "Oct 15, 2025",
-            status: "approved",
-        },
-    ];
+        // Fetch user's applications
+        const fetchApplications = async () => {
+            try {
+                const response = await fetch(`${API_URL}/api/applications/my`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch applications');
+                }
+
+                const data = await response.json();
+                setApplications(data);
+            } catch (error) {
+                console.error('Error fetching applications:', error);
+                toast.error('Failed to load applications');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchApplications();
+    }, [isAuthenticated, navigate, token]);
 
     const statusColors = {
         submitted: "bg-blue-100 text-blue-800",
@@ -63,44 +86,54 @@ const MyApplications = () => {
                             Track your grant applications and their status
                         </p>
 
-                        <div className="space-y-4">
-                            {applications.map((app) => (
-                                <Card key={app.id} className="hover:shadow-custom-lg transition-smooth">
-                                    <CardHeader>
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <CardTitle>{app.grantTitle}</CardTitle>
-                                                <CardDescription>{app.organization}</CardDescription>
-                                            </div>
-                                            <Badge className={statusColors[app.status as keyof typeof statusColors]}>
-                                                {statusLabels[app.status as keyof typeof statusLabels]}
-                                            </Badge>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="flex gap-6 text-sm">
-                                            <div className="flex items-center gap-2">
-                                                <DollarSign className="h-4 w-4 text-muted-foreground" />
-                                                <span>Requested: {app.amount}</span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <Calendar className="h-4 w-4 text-muted-foreground" />
-                                                <span>Submitted: {app.submittedDate}</span>
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
-
-                        {applications.length === 0 && (
+                        {loading ? (
                             <Card>
                                 <CardContent className="py-12 text-center">
-                                    <p className="text-muted-foreground">
-                                        You haven't submitted any applications yet.
-                                    </p>
+                                    <p className="text-muted-foreground">Loading applications...</p>
                                 </CardContent>
                             </Card>
+                        ) : (
+                            <>
+                                <div className="space-y-4">
+                                    {applications.map((app) => (
+                                        <Card key={app.id} className="hover:shadow-custom-lg transition-smooth">
+                                            <CardHeader>
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <CardTitle>{app.grant.title}</CardTitle>
+                                                        <CardDescription>{app.grant.organization}</CardDescription>
+                                                    </div>
+                                                    <Badge className={statusColors[app.status as keyof typeof statusColors]}>
+                                                        {statusLabels[app.status as keyof typeof statusLabels]}
+                                                    </Badge>
+                                                </div>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="flex gap-6 text-sm">
+                                                    <div className="flex items-center gap-2">
+                                                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                                                        <span>Requested: ${(app.requestedAmount / 100).toLocaleString()}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                                                        <span>Submitted: {new Date(app.submittedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </div>
+
+                                {applications.length === 0 && (
+                                    <Card>
+                                        <CardContent className="py-12 text-center">
+                                            <p className="text-muted-foreground">
+                                                You haven't submitted any applications yet.
+                                            </p>
+                                        </CardContent>
+                                    </Card>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>

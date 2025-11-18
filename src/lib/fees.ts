@@ -10,14 +10,24 @@ export function parseAmountToNumber(amount: string): number | null {
 }
 
 export function computeApplicationFee(amount: string): number {
-    // Assumptions:
-    // - We use the maximum numeric value from the amount string as the basis.
-    // - Fee is 0.5% (0.005) of the grant amount, with a minimum of $25 and a maximum cap of $1000.
-    // - If parsing fails, default fee is $25.
+    // Tiered fee structure for grants $250K - $5M
+    // If parsing fails, default fee is $500.
     const parsed = parseAmountToNumber(amount);
-    if (!parsed || isNaN(parsed)) return 25;
-    const fee = Math.round(parsed * 0.005);
-    return Math.max(25, Math.min(1000, fee));
+    if (!parsed || isNaN(parsed)) return 500;
+
+    let fee;
+
+    if (parsed < 500000) {
+        fee = 500; // $500 for grants $250K-$500K
+    } else if (parsed < 1000000) {
+        fee = 750; // $750 for grants $500K-$1M
+    } else if (parsed < 2500000) {
+        fee = 1250; // $1,250 for grants $1M-$2.5M
+    } else {
+        fee = 2000; // $2,000 for grants $2.5M-$5M
+    }
+
+    return fee;
 }
 
 export function formatCurrency(amount: number): string {

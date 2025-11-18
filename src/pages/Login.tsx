@@ -23,10 +23,12 @@ const Login = () => {
         try {
             await login(email, password);
             toast.success("Logged in successfully!");
-            navigate("/");
+            // Use setTimeout to ensure state updates have propagated
+            setTimeout(() => {
+                navigate("/my-applications");
+            }, 100);
         } catch (error) {
             toast.error("Invalid email or password");
-        } finally {
             setIsLoading(false);
         }
     };
