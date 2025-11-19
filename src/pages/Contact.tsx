@@ -17,7 +17,7 @@ const Contact = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1 bg-background">
         {/* Hero */}
         <section className="gradient-hero py-16">
@@ -39,7 +39,7 @@ const Contact = () => {
               <div className="space-y-6">
                 <div className="bg-card p-6 rounded-lg shadow-custom-md">
                   <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
-                  
+
                   <div className="space-y-4">
                     <div className="flex items-start space-x-3">
                       <div className="p-2 rounded-lg bg-primary/10">
@@ -47,8 +47,8 @@ const Contact = () => {
                       </div>
                       <div>
                         <p className="font-medium">Email</p>
-                        <p className="text-sm text-muted-foreground">info@grantconnect.org</p>
-                        <p className="text-sm text-muted-foreground">support@grantconnect.org</p>
+                        <p className="text-sm text-muted-foreground">info@novagrants.org</p>
+                        <p className="text-sm text-muted-foreground">support@novagrants.org</p>
                       </div>
                     </div>
 
@@ -99,14 +99,14 @@ const Contact = () => {
               <div className="lg:col-span-2">
                 <div className="bg-card p-8 rounded-lg shadow-custom-md">
                   <h2 className="text-2xl font-bold mb-6">Send Us a Message</h2>
-                  
+
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="name">Full Name *</Label>
                         <Input id="name" placeholder="John Doe" required />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="email">Email Address *</Label>
                         <Input id="email" type="email" placeholder="john@example.com" required />
@@ -118,7 +118,7 @@ const Contact = () => {
                         <Label htmlFor="phone">Phone Number</Label>
                         <Input id="phone" type="tel" placeholder="+1 (555) 000-0000" />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="subject">Subject *</Label>
                         <Select required>
@@ -138,11 +138,11 @@ const Contact = () => {
 
                     <div className="space-y-2">
                       <Label htmlFor="message">Message *</Label>
-                      <Textarea 
-                        id="message" 
+                      <Textarea
+                        id="message"
                         placeholder="Tell us how we can help you..."
                         className="min-h-[150px]"
-                        required 
+                        required
                       />
                     </div>
 

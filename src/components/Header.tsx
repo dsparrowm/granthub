@@ -4,6 +4,7 @@ import { Menu, X, Search, ChevronDown, User } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { grants } from "@/data/grants";
 import { useAuth } from "@/contexts/AuthContext";
+import logo from "@/assets/logo.svg";
 
 const Header = () => {
   const location = useLocation();
@@ -61,7 +62,7 @@ const Header = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-10 text-xs">
             <div className="flex items-center gap-4">
-              <span className="hidden sm:inline">An official website of GrantConnect</span>
+              <span className="hidden sm:inline">An official website of NovaGrants</span>
             </div>
             <div className="flex items-center gap-4">
               <Link to="/contact" className="hover:text-accent transition-colors">Contact</Link>
@@ -76,12 +77,10 @@ const Header = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-3">
-              <div className="h-12 w-12 rounded-lg gradient-accent flex items-center justify-center">
-                <span className="text-white font-bold text-xl">GC</span>
-              </div>
+            <Link to="/" className="flex items-center space-x-1">
+              <img src={logo} alt="NovaGrants Logo" className="h-12 w-12" />
               <div className="hidden sm:block">
-                <div className="text-lg font-bold text-primary leading-tight">GrantConnect</div>
+                <div className="text-lg font-bold text-primary leading-tight">NovaGrants</div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide">Funding Opportunities</div>
               </div>
             </Link>

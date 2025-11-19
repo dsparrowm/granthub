@@ -136,7 +136,7 @@ const About = () => {
               <div className="animate-slide-up">
                 <h2 className="text-3xl font-bold mb-4">Our Mission</h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  GrantConnect was founded in 2018 with a simple yet powerful vision: to democratize access to funding for innovators, entrepreneurs, and changemakers. We believe that great ideas shouldn't fail due to lack of funding, and that passionate individuals deserve support to bring their visions to life.
+                  NovaGrants was founded in 2018 with a simple yet powerful vision: to democratize access to funding for innovators, entrepreneurs, and changemakers. We believe that great ideas shouldn't fail due to lack of funding, and that passionate individuals deserve support to bring their visions to life.
                 </p>
               </div>
 

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import logo from "@/assets/logo.svg";
 
 const Footer = () => {
   return (
@@ -11,8 +12,8 @@ const Footer = () => {
           {/* About */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <div className="h-8 w-8 rounded-lg bg-secondary" />
-              <span className="text-xl font-bold">GrantConnect</span>
+              <img src={logo} alt="NovaGrants Logo" className="h-8 w-8" />
+              <span className="text-xl font-bold">NovaGrants</span>
             </div>
             <p className="text-primary-foreground/80 text-sm">
               Empowering ideas through grants. Helping individuals and startups discover and apply for funding opportunities.
@@ -36,7 +37,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center space-x-2 text-sm text-primary-foreground/80">
                 <Mail size={16} />
-                <span>info@grantconnect.org</span>
+                <span>info@novagrants.org</span>
               </li>
               <li className="flex items-center space-x-2 text-sm text-primary-foreground/80">
                 <Phone size={16} />
@@ -56,9 +57,9 @@ const Footer = () => {
               Stay updated with new funding opportunities
             </p>
             <div className="flex gap-2">
-              <Input 
-                type="email" 
-                placeholder="Your email" 
+              <Input
+                type="email"
+                placeholder="Your email"
                 className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50"
               />
               <Button variant="secondary" size="sm">Subscribe</Button>
@@ -70,7 +71,7 @@ const Footer = () => {
         <div className="mt-8 pt-8 border-t border-primary-foreground/20">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-primary-foreground/80 text-sm">
-              © {new Date().getFullYear()} GrantConnect. All rights reserved.
+              © {new Date().getFullYear()} NovaGrants. All rights reserved.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
