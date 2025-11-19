@@ -62,7 +62,7 @@ const Header = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-10 text-xs">
             <div className="flex items-center gap-4">
-              <span className="hidden sm:inline">An official website of NovaGrants</span>
+              <span className="hidden sm:inline">An official website of GrantConnect</span>
             </div>
             <div className="flex items-center gap-4">
               <Link to="/contact" className="hover:text-accent transition-colors">Contact</Link>
@@ -77,8 +77,8 @@ const Header = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-1">
-              <img src={logo} alt="NovaGrants Logo" className="h-12 w-12" />
+            <Link to="/" className="flex items-center space-x-3">
+              <img src={logo} alt="NovaGrants Logo" width={48} height={48} />
               <div className="hidden sm:block">
                 <div className="text-lg font-bold text-primary leading-tight">NovaGrants</div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide">Funding Opportunities</div>
@@ -101,9 +101,6 @@ const Header = () => {
             <div className="hidden md:flex items-center gap-4">
               {isAuthenticated ? (
                 <>
-                  <Button asChild variant="ghost" size="sm">
-                    <Link to="/my-applications">My Applications</Link>
-                  </Button>
                   {user?.role === "admin" && (
                     <Button asChild variant="ghost" size="sm">
                       <Link to="/admin">Admin Dashboard</Link>

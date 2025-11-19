@@ -33,7 +33,7 @@ const Signup = () => {
             toast.success("Account created successfully!");
             // Use setTimeout to ensure state updates have propagated
             setTimeout(() => {
-                navigate("/my-applications");
+                navigate("/profile");
             }, 100);
         } catch (error) {
             toast.error("Failed to create account");

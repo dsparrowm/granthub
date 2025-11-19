@@ -25,7 +25,7 @@ const Login = () => {
             toast.success("Logged in successfully!");
             // Use setTimeout to ensure state updates have propagated
             setTimeout(() => {
-                navigate("/my-applications");
+                navigate("/profile");
             }, 100);
         } catch (error) {
             toast.error("Invalid email or password");
