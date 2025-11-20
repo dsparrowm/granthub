@@ -15,7 +15,7 @@ const Header = () => {
     { name: "Grants", path: "/grants", hasDropdown: true },
     { name: "Resources", path: "/resources", hasDropdown: true },
     { name: "About", path: "/about" },
-    { name: "News & Events", path: "/contact" },
+    { name: "News & Events", path: "/news" },
   ];
 
   const [grantsOpen, setGrantsOpen] = useState(false);

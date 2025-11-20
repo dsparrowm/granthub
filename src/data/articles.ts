@@ -1,5 +1,3 @@
-import grantsIllustration from "@/assets/grants-illustration.jpg";
-
 export interface Article {
     id: number;
     title: string;
@@ -20,7 +18,7 @@ export const articles: Article[] = [
         date: "Oct 15, 2025",
         readTime: "5 min read",
         excerpt: "Learn the essential elements that make grant proposals stand out to reviewers and increase your chances of funding success.",
-        image: grantsIllustration,
+        image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=800",
         author: "Sarah Jenkins",
         content: `
       <h2>1. Start Early and Plan Ahead</h2>
@@ -61,7 +59,7 @@ export const articles: Article[] = [
         date: "Oct 10, 2025",
         readTime: "4 min read",
         excerpt: "Read about TechStart's journey from idea to funded startup and the strategies that helped them win multiple grants.",
-        image: grantsIllustration,
+        image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800",
         author: "Michael Chen",
         content: `
       <p>TechStart, a small software company focused on educational technology, recently secured a $100,000 grant to expand their operations. Their journey offers valuable lessons for other startups seeking funding.</p>
@@ -93,7 +91,7 @@ export const articles: Article[] = [
         date: "Oct 5, 2025",
         readTime: "6 min read",
         excerpt: "A comprehensive guide to understanding and meeting grant eligibility criteria for different types of funding opportunities.",
-        image: grantsIllustration,
+        image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=800",
         author: "Emma Wilson",
         content: `
       <p>Before you spend hours writing a proposal, the most important step is checking if you are actually eligible to apply. Applying for grants you aren't eligible for is the biggest waste of time in fundraising.</p>
@@ -126,7 +124,7 @@ export const articles: Article[] = [
         date: "Sep 28, 2025",
         readTime: "8 min read",
         excerpt: "Master the art of creating detailed, realistic budgets that demonstrate fiscal responsibility and project viability.",
-        image: grantsIllustration,
+        image: "https://images.unsplash.com/photo-1554224154-260327c00c4b?auto=format&fit=crop&q=80&w=800",
         author: "David Ross",
         content: `
       <p>A budget is more than just a spreadsheet; it's a financial representation of your project plan. A strong budget builds trust with the funder.</p>
@@ -160,7 +158,7 @@ export const articles: Article[] = [
         date: "Sep 20, 2025",
         readTime: "5 min read",
         excerpt: "Learn how to define, track, and report on project outcomes to satisfy funders and improve future applications.",
-        image: grantsIllustration,
+        image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800",
         author: "Sarah Jenkins",
         content: `
       <p>Funders don't just want to know what you did; they want to know what difference it made. Impact measurement is the process of collecting and analyzing data to prove your success.</p>
@@ -192,7 +190,7 @@ export const articles: Article[] = [
         date: "Sep 15, 2025",
         readTime: "4 min read",
         excerpt: "Discover the most common pitfalls in grant applications and how to avoid them for a stronger submission.",
-        image: grantsIllustration,
+        image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=800",
         author: "Emma Wilson",
         content: `
       <p>Even great projects can get rejected due to poor applications. Here are the most common mistakes we see:</p>

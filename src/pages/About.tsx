@@ -2,7 +2,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Target, Eye, Heart, Users } from "lucide-react";
+import { Target, Eye, Heart, Users, ArrowRight, CheckCircle2, Sparkles, Globe, ShieldCheck } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import teamPhoto from "@/assets/image.png";
 
 const About = () => {
@@ -11,21 +14,29 @@ const About = () => {
       icon: Target,
       title: "Mission-Driven",
       description: "We exist to democratize access to funding and empower innovators worldwide.",
+      color: "text-blue-500",
+      bg: "bg-blue-500/10",
     },
     {
       icon: Eye,
       title: "Transparent",
       description: "We believe in clear communication and honest processes throughout the grant lifecycle.",
+      color: "text-green-500",
+      bg: "bg-green-500/10",
     },
     {
       icon: Heart,
       title: "Impact-Focused",
       description: "Every grant we facilitate is chosen for its potential to create meaningful change.",
+      color: "text-rose-500",
+      bg: "bg-rose-500/10",
     },
     {
       icon: Users,
       title: "Community-Centered",
       description: "We build lasting relationships with grantees, funders, and partners.",
+      color: "text-purple-500",
+      bg: "bg-purple-500/10",
     },
   ];
 
@@ -33,22 +44,26 @@ const About = () => {
     {
       name: "Dr. Sarah Mitchell",
       role: "Executive Director",
-      bio: "15+ years in nonprofit management and social entrepreneurship",
+      bio: "15+ years in nonprofit management and social entrepreneurship.",
+      initials: "SM",
     },
     {
       name: "James Chen",
       role: "Director of Programs",
-      bio: "Expert in grant management with background in venture capital",
+      bio: "Expert in grant management with background in venture capital.",
+      initials: "JC",
     },
     {
       name: "Maria Rodriguez",
       role: "Head of Partnerships",
-      bio: "Former corporate social responsibility leader at Fortune 500 company",
+      bio: "Former corporate social responsibility leader at Fortune 500 company.",
+      initials: "MR",
     },
     {
       name: "David Kim",
       role: "Technology Director",
-      bio: "Tech entrepreneur passionate about leveraging technology for social good",
+      bio: "Tech entrepreneur passionate about leveraging technology for social good.",
+      initials: "DK",
     },
   ];
 
@@ -59,123 +74,50 @@ const About = () => {
     { number: "95%", label: "Success Rate" },
   ];
 
-  const partners = [
-    "Global Innovation Fund",
-    "Tech Foundation",
-    "Green Future Initiative",
-    "Education First",
-    "Health Alliance",
-    "Social Impact Ventures",
-  ];
-
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background font-sans">
       <Header />
 
       <main className="flex-1">
-        {/* Hero */}
-        <section className="relative overflow-hidden bg-background">
-          <div className="absolute inset-0 gradient-hero opacity-10" />
+        {/* Hero Section */}
+        <section className="relative pt-24 pb-20 lg:pt-32 lg:pb-28 overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-background to-background -z-10" />
 
-          <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
-              {/* Left Column - Content */}
-              <div className="animate-fade-in">
-                <div className="inline-block px-4 py-2 bg-secondary/10 rounded-full mb-6">
-                  <span className="text-sm font-semibold text-secondary">Since 2018</span>
-                </div>
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-                  Democratizing Access to{" "}
-                  <span className="text-gradient bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                    Funding
-                  </span>
-                </h1>
-                <p className="text-muted-foreground text-lg md:text-xl mb-8 leading-relaxed max-w-xl">
-                  We connect innovators, entrepreneurs, and changemakers with the resources they need to transform ideas into reality and create meaningful impact worldwide.
-                </p>
-                <div className="flex flex-wrap gap-4">
-                  <Button asChild size="lg" className="shadow-elegant">
-                    <Link to="/grants">Explore Grants</Link>
-                  </Button>
-                  <Button asChild variant="outline" size="lg">
-                    <Link to="/contact">Get in Touch</Link>
-                  </Button>
-                </div>
-              </div>
-
-              {/* Right Column - Image & Stats Overlay */}
-              <div className="relative animate-scale-in">
-                <div className="relative rounded-2xl overflow-hidden shadow-custom-xl">
-                  <img
-                    src={teamPhoto}
-                    alt="GrantConnect team collaborating on funding initiatives"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                </div>
-
-                {/* Floating Stats Cards */}
-                <div className="absolute -bottom-6 -left-6 bg-card p-6 rounded-xl shadow-custom-lg border border-border animate-slide-up">
-                  <div className="text-4xl font-bold text-primary mb-1">500+</div>
-                  <div className="text-sm text-muted-foreground">Grants Facilitated</div>
-                </div>
-
-                <div className="absolute -top-6 -right-6 bg-card p-6 rounded-xl shadow-custom-lg border border-border animate-slide-up" style={{ animationDelay: "200ms" }}>
-                  <div className="text-4xl font-bold text-secondary mb-1">$50M+</div>
-                  <div className="text-sm text-muted-foreground">Funding Distributed</div>
-                </div>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto text-center">
+              <Badge variant="secondary" className="mb-6 px-4 py-1.5 text-sm font-medium rounded-full">
+                Established 2018
+              </Badge>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground mb-8">
+                Empowering the next generation of <span className="text-primary">changemakers</span>
+              </h1>
+              <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10">
+                We connect innovators, entrepreneurs, and visionaries with the resources they need to transform ideas into reality and create meaningful global impact.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Button asChild size="lg" className="h-12 px-8 text-base rounded-full shadow-lg hover:shadow-xl transition-all">
+                  <Link to="/grants">
+                    Explore Grants <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="h-12 px-8 text-base rounded-full border-2">
+                  <Link to="/contact">Contact Us</Link>
+                </Button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Mission & Vision */}
-        <section className="py-16 bg-background">
+        {/* Stats Strip */}
+        <section className="border-y bg-muted/30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-              <div className="animate-slide-up">
-                <h2 className="text-3xl font-bold mb-4">Our Mission</h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  NovaGrants was founded in 2018 with a simple yet powerful vision: to democratize access to funding for innovators, entrepreneurs, and changemakers. We believe that great ideas shouldn't fail due to lack of funding, and that passionate individuals deserve support to bring their visions to life.
-                </p>
-              </div>
-
-              <div className="animate-slide-up" style={{ animationDelay: "100ms" }}>
-                <h2 className="text-3xl font-bold mb-4">Our Vision</h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  We envision a world where every innovator has access to the resources they need to succeed. Through our platform, we're building a global community of funded changemakers who are solving the world's most pressing challenges.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* How Funding Works */}
-        <section className="py-12 bg-muted/10">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-            <h2 className="text-3xl font-bold mb-4">How funding works on our platform</h2>
-            <p className="text-muted-foreground leading-relaxed mb-4">
-              Our platform connects funders (governments, foundations, and private donors) with applicants. We do not provide grant money ourselves — we facilitate applications, reviews, and award administration on behalf of funders.
-            </p>
-            <p className="text-muted-foreground leading-relaxed mb-4">
-              To help sustain the platform and cover operational costs (staff, platform maintenance, application processing), we collect a small application fee which is calculated based on the requested grant amount. This fee is used only to run the service and is not part of the grant funding.
-            </p>
-            <p className="text-muted-foreground leading-relaxed">
-              Additionally, recipients who receive grant funding are asked to return 30% of the grant amount after two years so that the returned funds can be re-distributed to new grantees. This policy helps create a revolving pool of funding and extend the impact of each grant cycle.
-            </p>
-          </div>
-        </section>
-
-        {/* Stats */}
-        <section className="py-16 gradient-accent">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border/50">
               {stats.map((stat, index) => (
-                <div key={index} className="text-center animate-scale-in" style={{ animationDelay: `${index * 100}ms` }}>
-                  <div className="text-4xl md:text-5xl font-bold text-secondary-foreground mb-2">
+                <div key={index} className="py-8 text-center px-4">
+                  <div className="text-3xl md:text-4xl font-bold text-foreground mb-1 tracking-tight">
                     {stat.number}
                   </div>
-                  <div className="text-secondary-foreground/80 font-medium">
+                  <div className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
                     {stat.label}
                   </div>
                 </div>
@@ -184,106 +126,175 @@ const About = () => {
           </div>
         </section>
 
-        {/* Values */}
-        <section className="py-16 bg-background">
+        {/* Mission & Vision Split */}
+        <section className="py-24 bg-background">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Values</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                The principles that guide everything we do
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-              {values.map((value, index) => (
-                <div
-                  key={index}
-                  className="bg-card p-6 rounded-lg shadow-custom-md hover:shadow-custom-lg transition-smooth animate-scale-in"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-lg gradient-accent">
-                    <value.icon className="h-6 w-6 text-secondary-foreground" />
+            <div className="grid md:grid-cols-2 gap-16 items-center">
+              <div className="relative">
+                <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-3xl blur-2xl -z-10" />
+                <img
+                  src={teamPhoto}
+                  alt="Team collaboration"
+                  className="rounded-2xl shadow-2xl w-full object-cover aspect-[4/3]"
+                />
+                <div className="absolute -bottom-6 -right-6 bg-card p-6 rounded-xl shadow-xl border border-border max-w-xs hidden lg:block">
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                      <Globe className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-lg">Global Reach</p>
+                      <p className="text-xs text-muted-foreground">Supporting ideas everywhere</p>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">{value.title}</h3>
-                  <p className="text-muted-foreground text-sm">{value.description}</p>
                 </div>
+              </div>
+
+              <div className="space-y-8">
+                <div>
+                  <h2 className="text-3xl font-bold mb-4">Our Mission</h2>
+                  <p className="text-lg text-muted-foreground leading-relaxed">
+                    NovaGrants was founded with a simple yet powerful vision: to democratize access to funding. We believe that great ideas shouldn't fail due to lack of capital, and that passionate individuals deserve support to bring their visions to life.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex gap-4 items-start">
+                    <div className="mt-1 bg-primary/10 p-2 rounded-lg">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg">Innovation First</h3>
+                      <p className="text-muted-foreground">Prioritizing breakthrough ideas that challenge the status quo.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4 items-start">
+                    <div className="mt-1 bg-secondary/10 p-2 rounded-lg">
+                      <ShieldCheck className="h-5 w-5 text-secondary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg">Trust & Integrity</h3>
+                      <p className="text-muted-foreground">Building a transparent ecosystem for funders and grantees.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* How Funding Works - Modern Cards */}
+        <section className="py-24 bg-muted/30">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <h2 className="text-3xl font-bold mb-4">Our Sustainable Model</h2>
+              <p className="text-muted-foreground text-lg">
+                We operate with transparency to ensure the platform remains accessible and impactful for years to come.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              <Card className="border-none shadow-lg bg-background/50 backdrop-blur-sm">
+                <CardContent className="p-8">
+                  <div className="h-12 w-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-6">
+                    <CheckCircle2 className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3">Operational Sustainability</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    To maintain our platform, staff, and application processing, we collect a small application fee calculated based on the requested grant amount. This fee is strictly for operational costs and is never part of the grant funding itself.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-none shadow-lg bg-background/50 backdrop-blur-sm">
+                <CardContent className="p-8">
+                  <div className="h-12 w-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center mb-6">
+                    <Heart className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3">The Pay-It-Forward Pledge</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Recipients who successfully receive funding are asked to return 30% of the grant amount after two years. These returned funds are directly re-distributed to new grantees, creating a revolving pool of impact.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* Values Grid */}
+        <section className="py-24 bg-background">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold mb-4">Core Values</h2>
+              <p className="text-muted-foreground">The principles that guide our every decision</p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {values.map((value, index) => (
+                <Card key={index} className="border-none shadow-md hover:shadow-xl transition-all duration-300 group">
+                  <CardContent className="p-6 text-center">
+                    <div className={`mx-auto w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110 ${value.bg} ${value.color}`}>
+                      <value.icon className="h-7 w-7" />
+                    </div>
+                    <h3 className="font-bold text-lg mb-2">{value.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {value.description}
+                    </p>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Team */}
-        <section className="py-16 bg-muted/30">
+        {/* Team Section */}
+        <section className="py-24 bg-muted/30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Leadership Team</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Meet the passionate individuals driving our mission forward
-              </p>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold mb-4">Meet the Team</h2>
+              <p className="text-muted-foreground">The passionate individuals driving our mission</p>
             </div>
 
-            <div className="mb-12">
-              <img
-                src={teamPhoto}
-                alt="GrantConnect leadership team"
-                className="w-full max-w-4xl mx-auto rounded-lg shadow-custom-xl"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               {team.map((member, index) => (
-                <div
-                  key={index}
-                  className="bg-card p-6 rounded-lg shadow-custom-md text-center animate-slide-up"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <h3 className="text-lg font-semibold mb-1">{member.name}</h3>
+                <div key={index} className="group text-center">
+                  <div className="relative mb-6 inline-block">
+                    <Avatar className="h-32 w-32 mx-auto border-4 border-background shadow-xl group-hover:scale-105 transition-transform duration-300">
+                      <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${member.name}`} />
+                      <AvatarFallback>{member.initials}</AvatarFallback>
+                    </Avatar>
+                    <div className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                      <Users className="h-4 w-4" />
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-bold mb-1">{member.name}</h3>
                   <p className="text-sm text-primary font-medium mb-3">{member.role}</p>
-                  <p className="text-sm text-muted-foreground">{member.bio}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed px-4">
+                    {member.bio}
+                  </p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Partners */}
-        <section className="py-16 bg-background">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Partners</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Collaborating with leading organizations to maximize impact
-              </p>
-            </div>
+        {/* CTA Section */}
+        <section className="py-24 relative overflow-hidden">
+          <div className="absolute inset-0 bg-primary -z-20" />
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80')] bg-cover bg-center opacity-10 mix-blend-overlay -z-10" />
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-5xl mx-auto">
-              {partners.map((partner, index) => (
-                <div
-                  key={index}
-                  className="bg-card p-4 rounded-lg shadow-custom-sm hover:shadow-custom-md transition-smooth flex items-center justify-center text-center animate-scale-in"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <p className="text-sm font-medium text-muted-foreground">{partner}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="py-16 gradient-hero">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
-              Join Our Mission
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl md:text-5xl font-bold text-primary-foreground mb-6">
+              Ready to make an impact?
             </h2>
-            <p className="text-primary-foreground/90 text-lg mb-8 max-w-2xl mx-auto">
-              Whether you're seeking funding or want to support innovators, we'd love to have you in our community
+            <p className="text-primary-foreground/80 text-lg md:text-xl max-w-2xl mx-auto mb-10">
+              Join thousands of innovators who have already started their journey with us.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-card text-primary hover:bg-card/90">
-                <Link to="/grants">Explore Grants</Link>
+              <Button asChild size="lg" variant="secondary" className="h-14 px-8 text-lg rounded-full shadow-xl">
+                <Link to="/grants">Find Funding</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+              <Button asChild variant="outline" size="lg" className="h-14 px-8 text-lg rounded-full bg-transparent text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground hover:text-primary">
                 <Link to="/contact">Partner With Us</Link>
               </Button>
             </div>
