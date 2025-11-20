@@ -175,10 +175,10 @@ const Index = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <img src={newsImg1} alt="Grant illustration" className="w-full h-40 object-cover rounded-lg shadow-lg" />
-                <img src={newsImg2} alt="Collaboration" className="w-full h-40 object-cover rounded-lg shadow-lg" />
-                <img src={newsImg3} alt="Team photo" className="w-full h-40 object-cover rounded-lg shadow-lg col-span-2 md:col-span-1" />
-                <img src={heroImage} alt="Access to markets" className="w-full h-40 object-cover rounded-lg shadow-lg" />
+                <img src="https://images.unsplash.com/photo-1553729459-efe14ef6055d?auto=format&fit=crop&w=800&q=80" alt="Financial Growth" className="w-full h-40 object-cover rounded-lg shadow-lg" />
+                <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=800&q=80" alt="Strategic Partnerships" className="w-full h-40 object-cover rounded-lg shadow-lg" />
+                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80" alt="Market Analytics" className="w-full h-40 object-cover rounded-lg shadow-lg col-span-2 md:col-span-1" />
+                <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80" alt="Network Connections" className="w-full h-40 object-cover rounded-lg shadow-lg" />
               </div>
             </div>
           </div>
