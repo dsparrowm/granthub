@@ -71,29 +71,25 @@ const Index = () => {
           {/* Desktop / tablet background (hidden on small screens) */}
           <div
             className="hidden md:absolute md:inset-0 md:bg-cover md:bg-center md:block"
-            style={{ backgroundImage: `url(${heroImage})` }}
+            style={{ backgroundImage: `url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=2000')` }}
             aria-hidden
           />
           {/* Mobile background (visible only on small screens) */}
           <div
             className="absolute inset-0 bg-cover bg-center md:hidden"
-            style={{ backgroundImage: `url(${heroMobile})` }}
+            style={{ backgroundImage: `url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800')` }}
             aria-hidden
           />
-          {/* Mobile overlay so text remains readable on small screens */}
-          <div className="absolute inset-0 md:hidden pointer-events-none" aria-hidden>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
-          </div>
-          {/* Reduce overlay opacity so background image remains visible */}
-          {/* <div className="absolute inset-0 gradient-hero opacity-30" /> */}
+          {/* Gradient overlay: Darker on left for text, lighter on right for image */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70ack/50 to-transparent" aria-hidden />
 
           <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-28 md:py-40 lg:py-48">
-            <div className="max-w-3xl mx-auto md:mx-0 text-left text-white/80 animate-fade-in">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-wide leading-tight transform -translate-y-3 md:-translate-y-6 lg:-translate-y-8">
+            <div className="max-w-3xl mx-auto md:mx-0 text-left text-white animate-fade-in relative z-10">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-wide leading-tight transform -translate-y-3 md:-translate-y-6 lg:-translate-y-8 drop-shadow-md">
                 <span className="block">Empowering Ideas</span>
                 <span className="block mt-4">Through Grants</span>
               </h1>
-              <p className="text-lg md:text-xl mb-8 text-primary-foreground/90">
+              <p className="text-lg md:text-xl mb-8 text-gray-100 drop-shadow-sm">
                 Discover funding opportunities and resources for individuals and startups. Search, apply, and get funded.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-start">
