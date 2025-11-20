@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
-import { Search, FileText, Award, ArrowRight, CheckCircle, DollarSign } from "lucide-react";
+import { Search, FileText, Award, ArrowRight, CheckCircle, DollarSign, Quote, Clock, TrendingUp } from "lucide-react";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Header from "@/components/Header";
@@ -18,12 +20,12 @@ import newsImg3 from "@/assets/community-image.png";
 const Index = () => {
   // Get grants from centralized service
   const allGrants = getAllGrants();
-  const featuredGrants = allGrants.slice(0, 3);
+  const featuredGrants = allGrants.slice(0, 4);
 
   // small helper: sort grants by deadline (earliest first) for "Closing soon"
-  const soonGrants = [...featuredGrants]
+  const soonGrants = [...allGrants]
     .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
-    .slice(0, 3);
+    .slice(0, 4);
 
   const howItWorks = [
     {
@@ -47,17 +49,23 @@ const Index = () => {
     {
       name: "Sarah Johnson",
       role: "Tech Startup Founder",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150",
       content: "NovaGrants helped me secure $75,000 in funding for my AI startup. The platform made the entire process seamless!",
+      grant: "Tech Innovation Fund"
     },
     {
       name: "Michael Chen",
       role: "Social Entrepreneur",
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150",
       content: "Thanks to NovaGrants, our community project received the funding it needed. Their support was invaluable.",
+      grant: "Community Impact Grant"
     },
     {
       name: "Emily Rodriguez",
       role: "Small Business Owner",
+      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=150",
       content: "I discovered grants I never knew existed. The platform is user-friendly and the results speak for themselves.",
+      grant: "Small Business Growth"
     },
   ];
 
@@ -181,44 +189,88 @@ const Index = () => {
         </section>
 
         {/* Featured Grants (with closing-soon box) */}
-        <section className="py-16 md:py-24 bg-background">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-start md:justify-between mb-8">
-              <div className="text-left mb-6 md:mb-0 animate-slide-up">
-                <h2 className="text-3xl md:text-4xl font-bold mb-2">Featured Grant Opportunities</h2>
-                <p className="text-muted-foreground text-lg max-w-2xl">
-                  Explore our curated selection of grants available for individuals and startups
-                </p>
-              </div>
+        <section className="py-24 bg-background relative">
+          {/* Decorative background elements */}
+          <div className="absolute top-0 right-0 -z-10 w-1/3 h-full bg-gradient-to-l from-primary/5 to-transparent" />
 
-              <div className="hidden md:block">
-                <div className="bg-card p-3 rounded-md text-sm w-64">
-                  <h4 className="font-semibold mb-2">Closing soon</h4>
-                  {soonGrants.map((g) => (
-                    <div key={g.id} className="mb-2">
-                      <div className="font-medium">{g.title}</div>
-                      <div className="text-muted-foreground text-sm">{g.deadline}</div>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col lg:flex-row gap-12">
+
+              {/* Main Content - Featured Grants */}
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <Badge variant="outline" className="mb-2 border-primary/20 text-primary">Opportunities</Badge>
+                    <h2 className="text-3xl md:text-4xl font-bold">Featured Grants</h2>
+                    <p className="text-muted-foreground mt-2">Curated funding opportunities for your next big idea.</p>
+                  </div>
+                  <Button asChild variant="ghost" className="hidden md:flex group">
+                    <Link to="/grants">View all <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {featuredGrants.map((grant, index) => (
+                    <div key={grant.id} className="animate-scale-in" style={{ animationDelay: `${index * 100}ms` }}>
+                      <GrantCard {...grant} />
                     </div>
                   ))}
-                  <div className="mt-2">
-                    <Link to="/grants" className="text-primary text-sm font-medium">See all deadlines →</Link>
+                </div>
+
+                <div className="mt-8 md:hidden text-center">
+                  <Button asChild variant="outline" className="w-full">
+                    <Link to="/grants">View all grants</Link>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Sidebar - Closing Soon & Categories */}
+              <div className="lg:w-80 space-y-6">
+                {/* Closing Soon Card */}
+                <div className="bg-card rounded-xl border border-border shadow-sm p-6">
+                  <div className="flex items-center gap-2 mb-4 text-amber-600">
+                    <Clock className="h-5 w-5" />
+                    <h3 className="font-bold">Closing Soon</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {soonGrants.map((g) => (
+                      <Link key={g.id} to={`/grants/${g.id}`} className="block group">
+                        <div className="p-3 rounded-lg bg-muted/50 group-hover:bg-muted transition-colors">
+                          <h4 className="font-medium text-sm line-clamp-1 group-hover:text-primary transition-colors">{g.title}</h4>
+                          <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
+                            <span>{g.organization}</span>
+                            <span className="text-amber-600 font-medium">{g.deadline}</span>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                  <Button asChild variant="link" className="w-full mt-2 text-muted-foreground hover:text-primary">
+                    <Link to="/grants">View calendar</Link>
+                  </Button>
+                </div>
+
+                {/* Quick Stats or Info */}
+                <div className="bg-primary/5 rounded-xl p-6 border border-primary/10">
+                  <div className="flex items-center gap-2 mb-2 text-primary">
+                    <TrendingUp className="h-5 w-5" />
+                    <h3 className="font-bold">Grant Trends</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Tech and Green Energy grants are seeing a 40% increase in funding this quarter.
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Tech Innovation</span>
+                      <span className="font-bold">32 Active</span>
+                    </div>
+                    <div className="w-full bg-background rounded-full h-2 overflow-hidden">
+                      <div className="bg-primary h-full rounded-full" style={{ width: '75%' }} />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredGrants.map((grant, index) => (
-                <div key={grant.id} className="animate-scale-in" style={{ animationDelay: `${index * 100}ms` }}>
-                  <GrantCard {...grant} />
-                </div>
-              ))}
-            </div>
-
-            <div className="text-center mt-12">
-              <Button asChild variant="default" size="lg">
-                <Link to="/grants">View All Grants <ArrowRight className="ml-2" /></Link>
-              </Button>
             </div>
           </div>
         </section>
@@ -313,172 +365,198 @@ const Index = () => {
         </section>
 
         {/* Grant Terms & Conditions Section */}
-        <section className="py-16 md:py-24 bg-muted/30">
+        <section className="py-24 bg-gradient-to-b from-background to-muted/30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">Understanding Our Grant Terms</h2>
-                <p className="text-muted-foreground text-lg">
-                  Transparent funding with fair terms designed to support your growth
+              <div className="text-center mb-16">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">Transparent & Fair Terms</h2>
+                <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                  We believe in clear, upfront communication. Our funding model is designed to be sustainable for us and transformative for you.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Application Fee Card */}
-                <Card className="border-2">
-                  <CardHeader>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="p-3 rounded-full bg-blue-100">
-                        <DollarSign className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <CardTitle>Application Fees</CardTitle>
+                <div className="group relative bg-card rounded-2xl p-8 shadow-lg border border-border/50 hover:shadow-xl transition-all duration-300">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-t-2xl" />
+
+                  <div className="mb-6">
+                    <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600 mb-4 group-hover:scale-110 transition-transform">
+                      <DollarSign className="h-6 w-6" />
                     </div>
-                    <CardDescription>
-                      One-time, non-refundable fee to process your application
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center pb-2 border-b">
-                        <span className="text-sm text-muted-foreground">$250K - $500K grants</span>
-                        <span className="font-semibold">$500</span>
+                    <h3 className="text-2xl font-bold mb-2">Application Fees</h3>
+                    <p className="text-muted-foreground">A one-time processing fee to ensure serious applicants and cover administrative review.</p>
+                  </div>
+
+                  <div className="space-y-4 mb-8">
+                    {[
+                      { range: "$250K - $500K", fee: "$500" },
+                      { range: "$500K - $1M", fee: "$750" },
+                      { range: "$1M - $2.5M", fee: "$1,250" },
+                      { range: "$2.5M - $5M", fee: "$2,000" },
+                    ].map((item, i) => (
+                      <div key={i} className="flex justify-between items-center py-3 border-b border-border/50 last:border-0">
+                        <span className="text-sm font-medium text-muted-foreground">{item.range}</span>
+                        <span className="font-bold text-foreground">{item.fee}</span>
                       </div>
-                      <div className="flex justify-between items-center pb-2 border-b">
-                        <span className="text-sm text-muted-foreground">$500K - $1M grants</span>
-                        <span className="font-semibold">$750</span>
-                      </div>
-                      <div className="flex justify-between items-center pb-2 border-b">
-                        <span className="text-sm text-muted-foreground">$1M - $2.5M grants</span>
-                        <span className="font-semibold">$1,250</span>
-                      </div>
-                      <div className="flex justify-between items-center pb-2 border-b">
-                        <span className="text-sm text-muted-foreground">$2.5M - $5M grants</span>
-                        <span className="font-semibold">$2,000</span>
-                      </div>
-                    </div>
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <p className="text-sm text-blue-900">
-                        <strong>Why we charge:</strong> Application fees cover administrative costs, thorough review processes, and help ensure we receive serious applications from qualified candidates.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                    ))}
+                  </div>
+
+                  <div className="bg-muted/50 rounded-xl p-4 text-sm text-muted-foreground leading-relaxed">
+                    <span className="font-semibold text-foreground">Note:</span> Fees are non-refundable and strictly cover the operational costs of our rigorous review process.
+                  </div>
+                </div>
 
                 {/* Repayment Terms Card */}
-                <Card className="border-2">
-                  <CardHeader>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="p-3 rounded-full bg-green-100">
-                        <Award className="h-6 w-6 text-green-600" />
-                      </div>
-                      <CardTitle>Repayment Terms</CardTitle>
-                    </div>
-                    <CardDescription>
-                      Fair and flexible repayment to sustain the program
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-4">
-                      <div className="bg-green-50 p-4 rounded-lg">
-                        <div className="text-center mb-3">
-                          <div className="text-4xl font-bold text-green-900">25%</div>
-                          <div className="text-sm text-green-700">of grant amount</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-green-900">2 Years</div>
-                          <div className="text-sm text-green-700">after receiving funds</div>
-                        </div>
-                      </div>
+                <div className="group relative bg-card rounded-2xl p-8 shadow-lg border border-border/50 hover:shadow-xl transition-all duration-300">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-t-2xl" />
 
-                      <div className="space-y-2">
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                          <p className="text-sm">No monthly payments or interest charges</p>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                          <p className="text-sm">Keep 75% of funding with no equity dilution</p>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                          <p className="text-sm">Helps us fund the next generation of innovators</p>
-                        </div>
-                      </div>
+                  <div className="mb-6">
+                    <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-green-600 mb-4 group-hover:scale-110 transition-transform">
+                      <Award className="h-6 w-6" />
                     </div>
+                    <h3 className="text-2xl font-bold mb-2">Repayment Model</h3>
+                    <p className="text-muted-foreground">A founder-friendly approach that keeps equity in your hands while sustaining the ecosystem.</p>
+                  </div>
 
-                    <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                      <p className="text-sm text-amber-900">
-                        <strong>Example:</strong> If you receive a $1M grant, you'll repay $250K after 2 years, keeping $750K to grow your business.
-                      </p>
+                  <div className="grid grid-cols-2 gap-4 mb-8">
+                    <div className="bg-green-500/5 rounded-xl p-4 text-center border border-green-500/10">
+                      <div className="text-3xl font-bold text-green-600 mb-1">25%</div>
+                      <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Repayment</div>
                     </div>
-                  </CardContent>
-                </Card>
+                    <div className="bg-green-500/5 rounded-xl p-4 text-center border border-green-500/10">
+                      <div className="text-3xl font-bold text-green-600 mb-1">2 Years</div>
+                      <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Grace Period</div>
+                    </div>
+                  </div>
+
+                  <ul className="space-y-3 mb-8">
+                    {[
+                      "No equity dilution – you keep full ownership",
+                      "No monthly payments or interest charges",
+                      "Funds are reinvested to support new grantees"
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 text-sm text-muted-foreground">
+                        <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="bg-amber-500/10 rounded-xl p-4 border border-amber-500/20">
+                    <p className="text-sm text-amber-700 dark:text-amber-400">
+                      <strong>Example:</strong> For a $1M grant, you repay $250K after 2 years. You keep $750K debt-free.
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <div className="mt-12 text-center">
-                <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="text-xl font-semibold mb-3">Questions About Our Terms?</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Our team is here to help you understand the application process and grant terms.
-                  </p>
-                  <Button asChild variant="outline" size="lg">
-                    <Link to="/contact">Contact Us</Link>
-                  </Button>
-                </div>
+              <div className="mt-16 text-center">
+                <p className="text-muted-foreground mb-6">Have specific questions about your eligibility or terms?</p>
+                <Button asChild variant="outline" size="lg" className="rounded-full px-8">
+                  <Link to="/contact">Talk to our Team</Link>
+                </Button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* How It Works */}
-        <section className="py-16 md:py-24 bg-muted/30">
+        {/* How It Works - Redesigned */}
+        <section className="py-24 bg-background relative overflow-hidden">
+          {/* Background decoration */}
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl" />
+          </div>
+
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Three simple steps to secure funding for your ideas
+            <div className="text-center mb-20">
+              <Badge variant="outline" className="mb-4 px-4 py-1 border-primary/20 text-primary">Simple Process</Badge>
+              <h2 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight">From Idea to Funding</h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
+                We've streamlined the grant process to help you focus on what matters most—your innovation.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {howItWorks.map((step, index) => (
-                <div key={index} className="text-center animate-slide-up" style={{ animationDelay: `${index * 150}ms` }}>
-                  <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full gradient-accent">
-                    <step.icon className="h-8 w-8 text-secondary-foreground" />
+            <div className="relative max-w-6xl mx-auto">
+              {/* Connecting Line (Desktop) */}
+              <div className="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-border to-transparent" />
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+                {howItWorks.map((step, index) => (
+                  <div key={index} className="group relative flex flex-col items-center text-center">
+                    {/* Step Number/Icon Container */}
+                    <div className="relative z-10 mb-8 transition-transform duration-300 group-hover:-translate-y-2">
+                      <div className="w-24 h-24 rounded-2xl bg-background border border-border shadow-lg flex items-center justify-center group-hover:border-primary/50 group-hover:shadow-primary/20 transition-all">
+                        <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                          <step.icon className="h-8 w-8" />
+                        </div>
+                      </div>
+                      <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-background px-3 py-1 rounded-full border border-border text-xs font-bold text-muted-foreground shadow-sm">
+                        Step 0{index + 1}
+                      </div>
+                    </div>
+
+                    <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">{step.title}</h3>
+                    <p className="text-muted-foreground leading-relaxed max-w-xs">
+                      {step.description}
+                    </p>
                   </div>
-                  <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
-                  <p className="text-muted-foreground">{step.description}</p>
-                </div>
-              ))}
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-16 text-center">
+              <Button asChild size="lg" className="rounded-full px-8 h-12 text-base shadow-lg hover:shadow-xl transition-all">
+                <Link to="/grants">Start Your Journey</Link>
+              </Button>
             </div>
           </div>
         </section>
 
         {/* Testimonials */}
-        <section className="py-16 md:py-24 bg-background">
+        <section className="py-24 bg-muted/20 relative">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
+            <div className="text-center mb-16">
+              <Badge variant="secondary" className="mb-4">Real Impact</Badge>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Success Stories</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Hear from those who've transformed their ideas into reality
+                Join the community of innovators who have transformed their vision into reality with our support.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
               {testimonials.map((testimonial, index) => (
                 <div
                   key={index}
-                  className="bg-card p-6 rounded-lg shadow-custom-md hover:shadow-custom-lg transition-smooth animate-scale-in"
-                  style={{ animationDelay: `${index * 100}ms` }}
+                  className="group relative bg-card p-8 rounded-2xl shadow-sm border border-border/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                 >
-                  <div className="flex items-center mb-4">
-                    <CheckCircle className="h-5 w-5 text-secondary mr-2" />
-                    <span className="text-sm font-semibold text-secondary">Funded</span>
+                  <div className="absolute top-8 right-8 text-primary/10 group-hover:text-primary/20 transition-colors">
+                    <Quote className="h-12 w-12" />
                   </div>
-                  <p className="text-muted-foreground mb-4 italic">"{testimonial.content}"</p>
-                  <div>
-                    <p className="font-semibold">{testimonial.name}</p>
-                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+
+                  <div className="flex items-center gap-4 mb-6">
+                    <Avatar className="h-12 w-12 border-2 border-background shadow-sm">
+                      <AvatarImage src={testimonial.image} alt={testimonial.name} />
+                      <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h4 className="font-bold text-foreground">{testimonial.name}</h4>
+                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    </div>
+                  </div>
+
+                  <div className="mb-6 relative z-10">
+                    <p className="text-muted-foreground leading-relaxed">"{testimonial.content}"</p>
+                  </div>
+
+                  <div className="pt-6 border-t border-border/50 flex items-center justify-between">
+                    <div className="flex items-center text-sm font-medium text-primary">
+                      <Award className="h-4 w-4 mr-2" />
+                      {testimonial.grant}
+                    </div>
+                    <Badge variant="outline" className="bg-green-500/5 text-green-600 border-green-200 hover:bg-green-500/10">
+                      Funded
+                    </Badge>
                   </div>
                 </div>
               ))}
