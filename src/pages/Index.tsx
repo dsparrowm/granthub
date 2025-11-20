@@ -101,7 +101,7 @@ const Index = () => {
                   <Link to="/grants">Search Grants <ArrowRight className="ml-2" /></Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
-                  <Link to="/apply">Apply Now</Link>
+                  <Link to="/grants">Apply Now</Link>
                 </Button>
               </div>
             </div>
@@ -271,7 +271,7 @@ const Index = () => {
 
             <div className="text-center mt-8">
               <Button asChild>
-                <Link to="/apply">Start an application</Link>
+                <Link to="/grants">Start an application</Link>
               </Button>
             </div>
           </div>

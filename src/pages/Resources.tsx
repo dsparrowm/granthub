@@ -1,191 +1,247 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, ArrowRight } from "lucide-react";
-import grantsIllustration from "@/assets/grants-illustration.jpg";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar, ArrowRight, Search, BookOpen, TrendingUp, Users, Mail } from "lucide-react";
+import heroImage from "@/assets/hero-collaboration.jpg";
+import { articles } from "@/data/articles";
 
 const Resources = () => {
-  const articles = [
-    {
-      id: 1,
-      title: "10 Tips for Writing a Winning Grant Proposal",
-      category: "Grant Writing",
-      date: "Oct 15, 2025",
-      excerpt: "Learn the essential elements that make grant proposals stand out to reviewers and increase your chances of funding success.",
-      image: grantsIllustration,
-    },
-    {
-      id: 2,
-      title: "Success Story: How TechStart Secured $100K in Funding",
-      category: "Success Stories",
-      date: "Oct 10, 2025",
-      excerpt: "Read about TechStart's journey from idea to funded startup and the strategies that helped them win multiple grants.",
-      image: grantsIllustration,
-    },
-    {
-      id: 3,
-      title: "Understanding Grant Eligibility Requirements",
-      category: "Grant Basics",
-      date: "Oct 5, 2025",
-      excerpt: "A comprehensive guide to understanding and meeting grant eligibility criteria for different types of funding opportunities.",
-      image: grantsIllustration,
-    },
-    {
-      id: 4,
-      title: "Building a Strong Project Budget for Grant Applications",
-      category: "Grant Writing",
-      date: "Sep 28, 2025",
-      excerpt: "Master the art of creating detailed, realistic budgets that demonstrate fiscal responsibility and project viability.",
-      image: grantsIllustration,
-    },
-    {
-      id: 5,
-      title: "The Importance of Impact Measurement in Grant Projects",
-      category: "Best Practices",
-      date: "Sep 20, 2025",
-      excerpt: "Learn how to define, track, and report on project outcomes to satisfy funders and improve future applications.",
-      image: grantsIllustration,
-    },
-    {
-      id: 6,
-      title: "Common Grant Application Mistakes to Avoid",
-      category: "Grant Writing",
-      date: "Sep 15, 2025",
-      excerpt: "Discover the most common pitfalls in grant applications and how to avoid them for a stronger submission.",
-      image: grantsIllustration,
-    },
-  ];
+  const [activeCategory, setActiveCategory] = useState("All");
 
   const categories = ["All", "Grant Writing", "Success Stories", "Grant Basics", "Best Practices"];
 
+  const filteredArticles = activeCategory === "All"
+    ? articles
+    : articles.filter(article => article.category === activeCategory);
+
+  const featuredArticle = articles[0];
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      
-      <main className="flex-1 bg-background">
-        {/* Hero */}
-        <section className="gradient-hero py-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-4 animate-fade-in">
-              Resources & Blog
-            </h1>
-            <p className="text-primary-foreground/90 text-lg max-w-2xl mx-auto">
-              Tips, guides, and success stories to help you succeed in your grant journey
-            </p>
-          </div>
-        </section>
 
-        {/* Categories */}
-        <section className="py-8 bg-card shadow-custom-sm">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-wrap gap-2 justify-center">
-              {categories.map((category) => (
-                <Badge 
-                  key={category} 
-                  variant={category === "All" ? "default" : "secondary"}
-                  className="cursor-pointer hover:opacity-80 transition-opacity px-4 py-2"
-                >
-                  {category}
-                </Badge>
-              ))}
-            </div>
+      <main className="flex-1">
+        {/* Modern Hero Section */}
+        <section className="relative py-24 lg:py-32 overflow-hidden">
+          <div className="absolute inset-0 z-0">
+            <img
+              src={heroImage}
+              alt="Resources Hero"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/40" />
           </div>
-        </section>
 
-        {/* Featured Article */}
-        <section className="py-12 bg-background">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-card rounded-lg shadow-custom-lg overflow-hidden animate-fade-in">
-                <div className="order-2 lg:order-1 p-8 flex flex-col justify-center">
-                  <Badge className="bg-accent text-accent-foreground w-fit mb-4">Featured</Badge>
-                  <h2 className="text-3xl font-bold mb-4">
-                    {articles[0].title}
-                  </h2>
-                  <p className="text-muted-foreground mb-6">
-                    {articles[0].excerpt}
-                  </p>
-                  <div className="flex items-center text-sm text-muted-foreground mb-6">
-                    <Calendar className="mr-2 h-4 w-4" />
-                    {articles[0].date}
-                  </div>
-                  <Button className="w-fit">
-                    Read More <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="order-1 lg:order-2">
-                  <img 
-                    src={articles[0].image} 
-                    alt={articles[0].title}
-                    className="w-full h-full object-cover"
+          <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-3xl animate-fade-in">
+              <Badge className="mb-4 bg-primary/10 text-primary hover:bg-primary/20 border-primary/20 px-4 py-1 text-sm">
+                Resource Hub
+              </Badge>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+                Insights for Your <br className="hidden md:block" />
+                <span className="text-primary">Funding Journey</span>
+              </h1>
+              <p className="text-xl text-muted-foreground mb-8 max-w-2xl leading-relaxed">
+                Expert guides, success stories, and practical tips to help you navigate the world of grants and secure funding for your vision.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 max-w-md">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search articles..."
+                    className="pl-10 h-12 bg-background/80 backdrop-blur-sm border-primary/20 focus:border-primary"
                   />
                 </div>
+                <Button size="lg" className="h-12 px-8">Search</Button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Articles Grid */}
+        {/* Categories & Content */}
         <section className="py-12 bg-muted/30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto">
-              <h2 className="text-3xl font-bold mb-8">Latest Articles</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {articles.slice(1).map((article, index) => (
-                  <Card 
-                    key={article.id} 
-                    className="gradient-card shadow-custom-md hover:shadow-custom-lg transition-smooth group animate-scale-in"
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
-                    <div className="overflow-hidden rounded-t-lg">
-                      <img 
-                        src={article.image} 
-                        alt={article.title}
-                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <CardHeader>
-                      <div className="flex justify-between items-center mb-2">
-                        <Badge variant="secondary">{article.category}</Badge>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <Calendar className="mr-1 h-4 w-4" />
-                          {article.date}
-                        </div>
-                      </div>
-                      <CardTitle className="group-hover:text-primary transition-colors">
-                        {article.title}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <CardDescription>{article.excerpt}</CardDescription>
-                    </CardContent>
-                    <CardFooter>
-                      <Button variant="ghost" className="w-full group-hover:bg-primary group-hover:text-primary-foreground">
-                        Read More <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
+
+            {/* Category Tabs */}
+            <div className="mb-12 overflow-x-auto pb-2">
+              <Tabs defaultValue="All" className="w-full" onValueChange={setActiveCategory}>
+                <TabsList className="h-12 bg-background/50 backdrop-blur-sm border p-1 gap-1 inline-flex w-auto min-w-full sm:min-w-0 justify-start">
+                  {categories.map((category) => (
+                    <TabsTrigger
+                      key={category}
+                      value={category}
+                      className="h-10 px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all"
+                    >
+                      {category}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
             </div>
+
+            {/* Featured Article (Only show on 'All' view) */}
+            {activeCategory === "All" && (
+              <div className="mb-16 animate-fade-in">
+                <div className="group relative overflow-hidden rounded-2xl bg-card border shadow-sm hover:shadow-md transition-all duration-300">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                    <div className="relative h-64 lg:h-auto overflow-hidden">
+                      <img
+                        src={featuredArticle.image}
+                        alt={featuredArticle.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute top-4 left-4">
+                        <Badge className="bg-background/90 text-foreground backdrop-blur-md border-none">
+                          Featured
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="p-8 lg:p-12 flex flex-col justify-center">
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
+                        <span className="flex items-center"><Calendar className="w-4 h-4 mr-1" /> {featuredArticle.date}</span>
+                        <span>•</span>
+                        <span className="flex items-center"><BookOpen className="w-4 h-4 mr-1" /> {featuredArticle.readTime}</span>
+                      </div>
+                      <h2 className="text-3xl font-bold mb-4 group-hover:text-primary transition-colors">
+                        {featuredArticle.title}
+                      </h2>
+                      <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
+                        {featuredArticle.excerpt}
+                      </p>
+                      <div className="flex items-center justify-between mt-auto pt-6 border-t">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                            {featuredArticle.author.charAt(0)}
+                          </div>
+                          <span className="text-sm font-medium">{featuredArticle.author}</span>
+                        </div>
+                        <Button variant="ghost" className="group/btn" asChild>
+                          <Link to={`/resources/${featuredArticle.id}`}>
+                            Read Article <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Articles Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {(activeCategory === "All" ? filteredArticles.slice(1) : filteredArticles).map((article, index) => (
+                <Card
+                  key={article.id}
+                  className="group flex flex-col border-none shadow-sm hover:shadow-xl transition-all duration-300 bg-card overflow-hidden animate-scale-in"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={article.image}
+                      alt={article.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute top-3 left-3">
+                      <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm">
+                        {article.category}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                      <Calendar className="w-3 h-3" />
+                      <span>{article.date}</span>
+                      <span>•</span>
+                      <span>{article.readTime}</span>
+                    </div>
+                    <CardTitle className="text-xl leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                      {article.title}
+                    </CardTitle>
+                  </CardHeader>
+
+                  <CardContent className="flex-1 pb-4">
+                    <CardDescription className="line-clamp-3 text-base">
+                      {article.excerpt}
+                    </CardDescription>
+                  </CardContent>
+
+                  <CardFooter className="pt-0 border-t bg-muted/10 p-4 mt-auto">
+                    <div className="flex items-center justify-between w-full">
+                      <span className="text-xs font-medium text-muted-foreground">By {article.author}</span>
+                      <span className="text-sm font-medium text-primary flex items-center group-hover:translate-x-1 transition-transform cursor-pointer">
+                        <Link to={`/resources/${article.id}`} className="flex items-center">
+                          Read <ArrowRight className="ml-1 h-3 w-3" />
+                        </Link>
+                      </span>
+                    </div>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+
+            {filteredArticles.length === 0 && (
+              <div className="text-center py-20">
+                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">No articles found</h3>
+                <p className="text-muted-foreground">Try selecting a different category.</p>
+              </div>
+            )}
           </div>
         </section>
 
-        {/* Newsletter CTA */}
-        <section className="py-16 gradient-accent">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-secondary-foreground mb-4">
-              Stay Informed
-            </h2>
-            <p className="text-secondary-foreground/90 text-lg mb-8 max-w-2xl mx-auto">
-              Subscribe to our newsletter for the latest tips, success stories, and funding opportunities
-            </p>
-            <Button size="lg" className="bg-card text-primary hover:bg-card/90">
-              Subscribe Now
-            </Button>
+        {/* Newsletter Section */}
+        <section className="py-20 bg-primary text-primary-foreground relative overflow-hidden">
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div>
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+
+          <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto bg-primary-foreground/5 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-white/10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white/20 mb-6">
+                    <Mail className="h-6 w-6 text-white" />
+                  </div>
+                  <h2 className="text-3xl font-bold mb-4">Subscribe to our newsletter</h2>
+                  <p className="text-primary-foreground/80 text-lg leading-relaxed">
+                    Get the latest grant opportunities, expert tips, and success stories delivered directly to your inbox every week.
+                  </p>
+                  <div className="flex items-center gap-4 mt-6 text-sm text-primary-foreground/60">
+                    <span className="flex items-center"><Users className="w-4 h-4 mr-2" /> 10k+ Subscribers</span>
+                    <span className="flex items-center"><TrendingUp className="w-4 h-4 mr-2" /> Weekly Updates</span>
+                  </div>
+                </div>
+
+                <div className="bg-white/10 p-6 rounded-2xl border border-white/10">
+                  <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium ml-1">Email Address</label>
+                      <Input
+                        type="email"
+                        placeholder="you@example.com"
+                        className="bg-white/90 border-0 text-foreground h-12"
+                      />
+                    </div>
+                    <Button size="lg" className="w-full h-12 bg-white text-primary hover:bg-white/90 font-semibold">
+                      Subscribe Now
+                    </Button>
+                    <p className="text-xs text-center text-primary-foreground/60 mt-4">
+                      We respect your privacy. Unsubscribe at any time.
+                    </p>
+                  </form>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </main>
