@@ -276,51 +276,70 @@ const Index = () => {
         </section>
 
         {/* How to Apply - step-by-step */}
-        <section className="py-12 bg-muted/10">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold">How to Apply</h3>
-              <p className="text-muted-foreground max-w-2xl mx-auto">A quick, step-by-step guide to find, prepare, and submit successful grant applications.</p>
-            </div>
+        <section className="py-24 bg-[#0f172a] text-white relative overflow-hidden">
+          {/* Background patterns */}
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
+            <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-0 w-64 h-64 bg-secondary rounded-full blur-3xl" />
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-              <div className="bg-card p-6 rounded-lg text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-primary text-white">
-                  <Search className="h-5 w-5" />
-                </div>
-                <h4 className="font-semibold mb-2">1. Search & Discover</h4>
-                <p className="text-sm text-muted-foreground">Find grants that match your sector and stage.</p>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+              <div className="max-w-2xl">
+                <Badge variant="outline" className="text-primary-foreground border-primary-foreground/20 mb-4">Application Process</Badge>
+                <h3 className="text-3xl md:text-4xl font-bold mb-4">Your Path to Funding</h3>
+                <p className="text-gray-400 text-lg">
+                  We've simplified the grant application process into four transparent steps, so you can focus on telling your story.
+                </p>
               </div>
-
-              <div className="bg-card p-6 rounded-lg text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-primary text-white">
-                  <FileText className="h-5 w-5" />
-                </div>
-                <h4 className="font-semibold mb-2">2. Check Eligibility</h4>
-                <p className="text-sm text-muted-foreground">Confirm requirements and prepare supporting documents.</p>
-              </div>
-
-              <div className="bg-card p-6 rounded-lg text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-primary text-white">
-                  <Award className="h-5 w-5" />
-                </div>
-                <h4 className="font-semibold mb-2">3. Complete Application</h4>
-                <p className="text-sm text-muted-foreground">Follow the application instructions and attach required files.</p>
-              </div>
-
-              <div className="bg-card p-6 rounded-lg text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-primary text-white">
-                  <CheckCircle className="h-5 w-5" />
-                </div>
-                <h4 className="font-semibold mb-2">4. Submit & Follow Up</h4>
-                <p className="text-sm text-muted-foreground">Submit before the deadline and track progress through your dashboard.</p>
-              </div>
-            </div>
-
-            <div className="text-center mt-8">
-              <Button asChild>
-                <Link to="/grants">Start an application</Link>
+              <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 shrink-0">
+                <Link to="/grants">Start Application Now</Link>
               </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              {[
+                {
+                  step: "01",
+                  title: "Find Your Match",
+                  desc: "Use our smart filters to identify grants that align with your industry, stage, and funding needs.",
+                  icon: Search
+                },
+                {
+                  step: "02",
+                  title: "Verify Eligibility",
+                  desc: "Complete a quick 2-minute eligibility check to ensure you meet all core requirements before applying.",
+                  icon: CheckCircle
+                },
+                {
+                  step: "03",
+                  title: "Prepare & Submit",
+                  desc: "Use our guided application builder to draft your proposal, upload documents, and submit securely.",
+                  icon: FileText
+                },
+                {
+                  step: "04",
+                  title: "Track Status",
+                  desc: "Get real-time updates on your application status and receive feedback directly through your dashboard.",
+                  icon: Award
+                }
+              ].map((item, i) => (
+                <div key={i} className="relative group">
+                  <div className="relative z-10 bg-white/5 border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-colors duration-300 h-full">
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary-foreground">
+                        <item.icon className="h-6 w-6" />
+                      </div>
+                      <span className="text-4xl font-bold text-white/5 font-mono">{item.step}</span>
+                    </div>
+
+                    <h4 className="text-xl font-bold mb-3">{item.title}</h4>
+                    <p className="text-gray-400 text-sm leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
