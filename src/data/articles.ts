@@ -124,7 +124,7 @@ export const articles: Article[] = [
         date: "Sep 28, 2025",
         readTime: "8 min read",
         excerpt: "Master the art of creating detailed, realistic budgets that demonstrate fiscal responsibility and project viability.",
-        image: "https://images.unsplash.com/photo-1554224154-260327c00c4b?auto=format&fit=crop&q=80&w=800",
+        image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=800",
         author: "David Ross",
         content: `
       <p>A budget is more than just a spreadsheet; it's a financial representation of your project plan. A strong budget builds trust with the funder.</p>
