@@ -97,7 +97,7 @@ const Index = () => {
                 <span className="block">Empowering Ideas</span>
                 <span className="block mt-4">Through Grants</span>
               </h1>
-              <p className="text-lg md:text-xl mb-8 text-gray-100 drop-shadow-sm">
+              <p className="text-lg md:text-xl mb-8 text-gray-100 drop-shadow-sm bg-black/60 p-4 rounded-lg inline-block backdrop-blur-sm">
                 Discover funding opportunities and resources for individuals and startups. Search, apply, and get funded.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-start">

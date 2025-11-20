@@ -6,7 +6,6 @@ import { Target, Eye, Heart, Users, ArrowRight, CheckCircle2, Sparkles, Globe, S
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import teamPhoto from "@/assets/image.png";
 
 const About = () => {
   const values = [
@@ -133,7 +132,7 @@ const About = () => {
               <div className="relative">
                 <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-3xl blur-2xl -z-10" />
                 <img
-                  src={teamPhoto}
+                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80"
                   alt="Team collaboration"
                   className="rounded-2xl shadow-2xl w-full object-cover aspect-[4/3]"
                 />
