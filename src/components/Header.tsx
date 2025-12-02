@@ -101,9 +101,7 @@ const Header = () => {
             <div className="hidden md:flex items-center gap-4">
               {isAuthenticated ? (
                 <>
-                  <Button asChild variant="ghost" size="sm">
-                    <Link to="/my-applications">My Applications</Link>
-                  </Button>
+
                   {user?.role === "admin" && (
                     <Button asChild variant="ghost" size="sm">
                       <Link to="/admin">Admin Dashboard</Link>

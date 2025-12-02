@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -9,90 +9,35 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "@/contexts/AuthContext";
-import { 
-    LayoutDashboard, 
-    FileText, 
-    Users, 
-    Settings, 
-    LogOut, 
-    Search, 
-    CheckCircle2, 
-    XCircle, 
-    Clock, 
+import { useAuth, User } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import {
+    LayoutDashboard,
+    FileText,
+    Users,
+    Settings,
+    LogOut,
+    Search,
+    CheckCircle2,
+    XCircle,
+    Clock,
     DollarSign,
     TrendingUp,
     Activity
 } from "lucide-react";
-import { toast } from "sonner";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { Application } from "@/services/api";
 
-// Mock Data
-const MOCK_APPLICATIONS = [
-    {
-        id: "APP-2025-001",
-        user: { name: "Alice Johnson", email: "alice@example.com" },
-        grant: { title: "Green Energy Innovation Fund", organization: "EcoFuture Foundation" },
-        status: "under_review",
-        submittedAt: "2025-11-10T10:00:00Z",
-        requestedAmount: 5000000
-    },
-    {
-        id: "APP-2025-002",
-        user: { name: "Bob Smith", email: "bob@techstart.io" },
-        grant: { title: "Tech for Social Good", organization: "Global Tech Alliance" },
-        status: "submitted",
-        submittedAt: "2025-11-18T14:30:00Z",
-        requestedAmount: 2500000
-    },
-    {
-        id: "APP-2025-003",
-        user: { name: "Carol White", email: "carol@community.org" },
-        grant: { title: "Community Arts Grant", organization: "Arts Council" },
-        status: "approved",
-        submittedAt: "2025-10-05T09:15:00Z",
-        requestedAmount: 1000000
-    },
-    {
-        id: "APP-2025-004",
-        user: { name: "David Brown", email: "david@research.edu" },
-        grant: { title: "Scientific Research Fund", organization: "Science Foundation" },
-        status: "rejected",
-        submittedAt: "2025-09-20T11:45:00Z",
-        requestedAmount: 7500000
-    },
-    {
-        id: "APP-2025-005",
-        user: { name: "Eva Green", email: "eva@green.org" },
-        grant: { title: "Green Energy Innovation Fund", organization: "EcoFuture Foundation" },
-        status: "approved",
-        submittedAt: "2025-11-01T16:20:00Z",
-        requestedAmount: 4500000
-    }
-];
 
-const MOCK_USERS = [
-    { id: 1, name: "Alice Johnson", email: "alice@example.com", role: "user", joined: "2025-01-15" },
-    { id: 2, name: "Bob Smith", email: "bob@techstart.io", role: "user", joined: "2025-02-20" },
-    { id: 3, name: "Admin User", email: "admin@novagrants.org", role: "admin", joined: "2024-12-01" },
-    { id: 4, name: "Carol White", email: "carol@community.org", role: "user", joined: "2025-03-10" },
-];
-
-const CHART_DATA = [
-    { name: 'Jan', applications: 4 },
-    { name: 'Feb', applications: 7 },
-    { name: 'Mar', applications: 5 },
-    { name: 'Apr', applications: 12 },
-    { name: 'May', applications: 18 },
-    { name: 'Jun', applications: 14 },
-];
 
 const AdminDashboard = () => {
-    const { isAuthenticated, user, logout } = useAuth();
+    const { isAuthenticated, user, logout, token } = useAuth();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState("overview");
-    const [applications, setApplications] = useState(MOCK_APPLICATIONS);
+    const [applications, setApplications] = useState<Application[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -105,17 +50,98 @@ const AdminDashboard = () => {
         }
     }, [isAuthenticated, user, navigate]);
 
+    useEffect(() => {
+        console.log('[AdminDashboard] Applications useEffect triggered', { token: !!token, user, role: user?.role });
+        const loadApplications = async () => {
+            if (!token || !user || user.role !== 'admin') {
+                console.log('[AdminDashboard] Skipping applications fetch', { token: !!token, user: !!user, role: user?.role });
+                return;
+            }
+
+            console.log('[AdminDashboard] Fetching applications...');
+            try {
+                const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/applications/admin/all`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch');
+
+                const data = await response.json();
+                console.log('[AdminDashboard] Applications fetched:', data.length);
+                setApplications(data);
+            } catch (error) {
+                console.log('Could not load applications:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadApplications();
+    }, [token, user]);
+
+    useEffect(() => {
+        console.log('[AdminDashboard] Users useEffect triggered', { token: !!token, user, role: user?.role });
+        const loadUsers = async () => {
+            if (!token || !user || user.role !== 'admin') {
+                console.log('[AdminDashboard] Skipping users fetch', { token: !!token, user: !!user, role: user?.role });
+                return;
+            }
+
+            console.log('[AdminDashboard] Fetching users...');
+            try {
+                const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/auth/admin/users`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch');
+
+                const data = await response.json();
+                console.log('[AdminDashboard] Users fetched:', data.length);
+                setUsers(data);
+            } catch (error) {
+                console.log('Could not load users:', error);
+            }
+        };
+
+        loadUsers();
+    }, [token, user]);
+
     const handleLogout = () => {
         logout();
         toast.success("Logged out successfully");
         navigate("/");
     };
 
-    const handleStatusChange = (id: string, newStatus: string) => {
-        setApplications(prev => prev.map(app => 
-            app.id === id ? { ...app, status: newStatus } : app
-        ));
-        toast.success(`Application status updated to ${newStatus}`);
+    const handleStatusChange = async (id: string, newStatus: string) => {
+        if (!token) return;
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/applications/${id}/status`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            if (!response.ok) throw new Error('Update failed');
+
+            const updatedApp = await response.json();
+            setApplications(prev => prev.map(app =>
+                app.id === id ? updatedApp : app
+            ));
+            toast.success(`Application status updated to ${newStatus}`);
+        } catch (error) {
+            toast.error('Failed to update status');
+            console.error('Status update error:', error);
+        }
     };
 
     const getStatusColor = (status: string) => {
@@ -128,18 +154,42 @@ const AdminDashboard = () => {
         }
     };
 
-    const filteredApplications = applications.filter(app => 
-        app.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        app.grant.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        app.id.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredApplications = applications.filter(app =>
+        app.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        app.grant?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        app.id?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const stats = {
         total: applications.length,
         pending: applications.filter(a => a.status === 'submitted' || a.status === 'under_review').length,
         approved: applications.filter(a => a.status === 'approved').length,
-        totalValue: applications.filter(a => a.status === 'approved').reduce((acc, curr) => acc + curr.requestedAmount, 0)
+        totalValue: applications.filter(a => a.status === 'approved').reduce((acc, curr) => acc + (curr.requestedAmount || 0), 0)
     };
+
+    // Generate chart data from applications by month
+    const chartData = React.useMemo(() => {
+        const monthCounts: Record<string, number> = {};
+        const now = new Date();
+
+        // Initialize last 6 months
+        for (let i = 5; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthName = date.toLocaleString('default', { month: 'short' });
+            monthCounts[monthName] = 0;
+        }
+
+        // Count applications by month
+        applications.forEach(app => {
+            const date = new Date(app.submittedAt);
+            const monthName = date.toLocaleString('default', { month: 'short' });
+            if (monthCounts[monthName] !== undefined) {
+                monthCounts[monthName]++;
+            }
+        });
+
+        return Object.entries(monthCounts).map(([name, applications]) => ({ name, applications }));
+    }, [applications]);
 
     if (!user) return null;
 
@@ -162,7 +212,7 @@ const AdminDashboard = () => {
                                         <p className="text-xs text-muted-foreground truncate">Manage Platform</p>
                                     </div>
                                 </div>
-                                
+
                                 <nav className="space-y-1">
                                     {[
                                         { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -173,17 +223,16 @@ const AdminDashboard = () => {
                                         <button
                                             key={item.id}
                                             onClick={() => setActiveTab(item.id)}
-                                            className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                                                activeTab === item.id 
-                                                    ? 'bg-primary text-primary-foreground' 
-                                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                                            }`}
+                                            className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === item.id
+                                                ? 'bg-primary text-primary-foreground'
+                                                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                                                }`}
                                         >
                                             <item.icon className="h-4 w-4" />
                                             {item.label}
                                         </button>
                                     ))}
-                                    
+
                                     <div className="pt-4 mt-4 border-t border-border">
                                         <button
                                             onClick={handleLogout}
@@ -201,7 +250,7 @@ const AdminDashboard = () => {
                     {/* Main Content */}
                     <div className="flex-1">
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                            
+
                             {/* OVERVIEW TAB */}
                             <TabsContent value="overview" className="space-y-6 animate-fade-in">
                                 <div>
@@ -246,7 +295,7 @@ const AdminDashboard = () => {
                                             <Users className="h-4 w-4 text-blue-500" />
                                         </CardHeader>
                                         <CardContent>
-                                            <div className="text-2xl font-bold">{MOCK_USERS.length}</div>
+                                            <div className="text-2xl font-bold">{users.length}</div>
                                             <p className="text-xs text-muted-foreground">+4 new this week</p>
                                         </CardContent>
                                     </Card>
@@ -260,7 +309,7 @@ const AdminDashboard = () => {
                                         </CardHeader>
                                         <CardContent className="h-[300px]">
                                             <ResponsiveContainer width="100%" height="100%">
-                                                <BarChart data={CHART_DATA}>
+                                                <BarChart data={chartData}>
                                                     <CartesianGrid strokeDasharray="3 3" />
                                                     <XAxis dataKey="name" />
                                                     <YAxis />
@@ -314,9 +363,9 @@ const AdminDashboard = () => {
                                             <CardTitle>All Applications</CardTitle>
                                             <div className="relative w-64">
                                                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                                                <Input 
-                                                    placeholder="Search applications..." 
-                                                    className="pl-8" 
+                                                <Input
+                                                    placeholder="Search applications..."
+                                                    className="pl-8"
                                                     value={searchTerm}
                                                     onChange={(e) => setSearchTerm(e.target.value)}
                                                 />
@@ -329,6 +378,7 @@ const AdminDashboard = () => {
                                                 <TableRow>
                                                     <TableHead>ID</TableHead>
                                                     <TableHead>Applicant</TableHead>
+                                                    <TableHead>Yearly Income</TableHead>
                                                     <TableHead>Grant</TableHead>
                                                     <TableHead>Amount</TableHead>
                                                     <TableHead>Status</TableHead>
@@ -345,6 +395,7 @@ const AdminDashboard = () => {
                                                                 <div className="text-xs text-muted-foreground">{app.user.email}</div>
                                                             </div>
                                                         </TableCell>
+                                                        <TableCell>{app.annualIncome || 'N/A'}</TableCell>
                                                         <TableCell>{app.grant.title}</TableCell>
                                                         <TableCell>${(app.requestedAmount / 100).toLocaleString()}</TableCell>
                                                         <TableCell>
@@ -353,8 +404,8 @@ const AdminDashboard = () => {
                                                             </Badge>
                                                         </TableCell>
                                                         <TableCell>
-                                                            <Select 
-                                                                defaultValue={app.status} 
+                                                            <Select
+                                                                defaultValue={app.status}
                                                                 onValueChange={(val) => handleStatusChange(app.id, val)}
                                                             >
                                                                 <SelectTrigger className="w-[130px] h-8">
@@ -396,7 +447,7 @@ const AdminDashboard = () => {
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                {MOCK_USERS.map((u) => (
+                                                {users.map((u) => (
                                                     <TableRow key={u.id}>
                                                         <TableCell className="font-medium">{u.name}</TableCell>
                                                         <TableCell>{u.email}</TableCell>
@@ -405,7 +456,7 @@ const AdminDashboard = () => {
                                                                 {u.role}
                                                             </Badge>
                                                         </TableCell>
-                                                        <TableCell>{new Date(u.joined).toLocaleDateString()}</TableCell>
+                                                        <TableCell>{new Date(u.createdAt).toLocaleDateString()}</TableCell>
                                                         <TableCell className="text-right">
                                                             <Button variant="ghost" size="sm">Edit</Button>
                                                         </TableCell>

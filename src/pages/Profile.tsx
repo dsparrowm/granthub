@@ -10,52 +10,68 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { 
-  LayoutDashboard, 
-  FileText, 
-  CreditCard, 
-  Settings, 
-  LogOut, 
-  Upload, 
-  CheckCircle2, 
-  Clock, 
+import {
+  LayoutDashboard,
+  FileText,
+  CreditCard,
+  Settings,
+  LogOut,
+  Upload,
+  CheckCircle2,
+  Clock,
   AlertCircle,
   DollarSign,
   Calendar
 } from "lucide-react";
 
-// Mock data for applications (fallback if API fails or for demo)
-const MOCK_APPLICATIONS = [
-  {
-    id: "APP-2025-001",
-    grant: { title: "Green Energy Innovation Fund", organization: "EcoFuture Foundation" },
-    status: "under_review",
-    submittedAt: "2025-11-10T10:00:00Z",
-    requestedAmount: 5000000,
-    feeStatus: "paid"
-  },
-  {
-    id: "APP-2025-002",
-    grant: { title: "Tech for Social Good", organization: "Global Tech Alliance" },
-    status: "pending_payment",
-    submittedAt: "2025-11-18T14:30:00Z",
-    requestedAmount: 2500000,
-    feeStatus: "unpaid",
-    feeAmount: 5000
-  }
-];
+import { fetchUserApplications, Application } from "@/services/api";
 
 const Profile = () => {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated, token } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
-  const [applications, setApplications] = useState(MOCK_APPLICATIONS);
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login");
+      return;
     }
-  }, [isAuthenticated, navigate]);
+
+    const loadData = async () => {
+      if (!token) return;
+
+      try {
+        const data = await fetchUserApplications(token);
+
+        // Map backend data to frontend structure
+        // We need to add feeStatus since it's not in the backend yet
+        const mappedApps = data.map(app => ({
+          ...app,
+          // Derive feeStatus based on status or random for now since backend doesn't have it
+          // In a real app, this would come from the backend
+          feeStatus: app.status === 'pending' ? 'unpaid' : 'paid',
+          feeAmount: app.applicationFeeCents,
+          // Ensure grant object has what we need
+          grant: {
+            ...app.grant,
+            // If amount is missing in grant object from API, use a default or format it
+            amount: app.grant.amount ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(app.grant.amount / 100) : 'N/A'
+          }
+        }));
+
+        setApplications(mappedApps);
+      } catch (error) {
+        // Silently handle error - API endpoint may not be ready yet
+        console.log("Could not load applications:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [isAuthenticated, navigate, token]);
 
   const handleLogout = () => {
     logout();
@@ -63,25 +79,103 @@ const Profile = () => {
     navigate("/");
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, appId: string) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, appId: string) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Mock upload process
+      if (!token) return;
+
+      // In a real app, you'd use FormData to upload the actual file
+      // For now, just notify the backend
       toast.promise(
-        new Promise((resolve) => setTimeout(resolve, 2000)),
+        fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/applications/${appId}/payment`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ paymentProof: file.name })
+        }).then(async (res) => {
+          if (!res.ok) throw new Error('Upload failed');
+          setApplications(prev => prev.map(app =>
+            app.id === appId ? { ...app, feeStatus: 'processing' } : app
+          ));
+          return await res.json();
+        }),
         {
           loading: 'Uploading proof of payment...',
-          success: () => {
-            // Update local state to show as paid/processing
-            setApplications(prev => prev.map(app => 
-              app.id === appId ? { ...app, feeStatus: 'processing' } : app
-            ));
-            return 'Proof of payment uploaded successfully!';
-          },
+          success: 'Proof of payment uploaded successfully!',
           error: 'Upload failed',
         }
       );
     }
+  };
+
+  const handleUpdateProfile = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!token) return;
+
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get('name') as string;
+    const organization = formData.get('org') as string;
+    const phone = formData.get('phone') as string;
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/auth/profile`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, organization, phone })
+      });
+
+      if (!response.ok) throw new Error('Failed to update profile');
+
+      const data = await response.json();
+      // Update local user state if needed, or rely on context refresh
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      console.error('Profile update error:', error);
+      toast.error("Failed to update profile");
+    }
+  };
+
+  const handleUpdatePassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!token) return;
+
+    const formData = new FormData(e.currentTarget);
+    const currentPassword = formData.get('current-password') as string;
+    const newPassword = formData.get('new-password') as string;
+
+    if (!currentPassword || !newPassword) {
+      toast.error('Please fill in all password fields');
+      return;
+    }
+
+    toast.promise(
+      fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/auth/password`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ currentPassword, newPassword })
+      }).then(async (res) => {
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.error || 'Update failed');
+        }
+        // Reset form
+        e.currentTarget.reset();
+        return await res.json();
+      }),
+      {
+        loading: 'Updating password...',
+        success: 'Password updated successfully!',
+        error: (err) => err.message || 'Failed to update password',
+      }
+    );
   };
 
   if (!user) return null;
@@ -91,7 +185,7 @@ const Profile = () => {
       case 'approved': return 'bg-green-100 text-green-800 border-green-200';
       case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
       case 'under_review': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'pending_payment': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
@@ -119,7 +213,7 @@ const Profile = () => {
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
                 </div>
-                
+
                 <nav className="space-y-1">
                   {[
                     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -130,17 +224,16 @@ const Profile = () => {
                     <button
                       key={item.id}
                       onClick={() => setActiveTab(item.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                        activeTab === item.id 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                      }`}
+                      className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === item.id
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                        }`}
                     >
                       <item.icon className="h-4 w-4" />
                       {item.label}
                     </button>
                   ))}
-                  
+
                   <div className="pt-4 mt-4 border-t border-border">
                     <button
                       onClick={handleLogout}
@@ -158,7 +251,7 @@ const Profile = () => {
           {/* Main Content Area */}
           <div className="flex-1">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              
+
               {/* OVERVIEW TAB */}
               <TabsContent value="overview" className="space-y-6 animate-fade-in">
                 <div>
@@ -228,7 +321,7 @@ const Profile = () => {
                       </div>
                     </CardContent>
                   </Card>
-                  
+
                   <Card className="col-span-3 bg-primary text-primary-foreground">
                     <CardHeader>
                       <CardTitle>Need Help?</CardTitle>
@@ -269,7 +362,7 @@ const Profile = () => {
                               {app.status.replace('_', ' ').toUpperCase()}
                             </Badge>
                           </div>
-                          
+
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                             <div>
                               <p className="text-muted-foreground mb-1">Application ID</p>
@@ -303,7 +396,7 @@ const Profile = () => {
                             </div>
                           </div>
                         </div>
-                        
+
                         {app.status === 'pending_payment' && (
                           <div className="bg-yellow-50/50 p-6 flex flex-col justify-center items-center border-t md:border-t-0 md:border-l border-border min-w-[200px]">
                             <p className="text-sm font-medium text-yellow-800 mb-3">Action Required</p>
@@ -365,9 +458,9 @@ const Profile = () => {
                           <div className="space-y-4">
                             <Label>Upload Proof of Payment</Label>
                             <div className="flex items-center gap-4">
-                              <Input 
-                                type="file" 
-                                accept="image/*,.pdf" 
+                              <Input
+                                type="file"
+                                accept="image/*,.pdf"
                                 onChange={(e) => handleFileUpload(e, app.id)}
                                 disabled={app.feeStatus === 'processing'}
                               />
@@ -424,55 +517,57 @@ const Profile = () => {
                 </div>
 
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Personal Information</CardTitle>
-                    <CardDescription>Update your personal details here.</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Full Name</Label>
-                        <Input id="name" defaultValue={user.name} />
+                  <form onSubmit={handleUpdateProfile}>
+                    <CardHeader>
+                      <CardTitle>Personal Information</CardTitle>
+                      <CardDescription>Update your personal details here.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="name">Full Name</Label>
+                          <Input id="name" name="name" defaultValue={user.name} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="email">Email Address</Label>
+                          <Input id="email" name="email" defaultValue={user.email} disabled />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="phone">Phone Number</Label>
+                          <Input id="phone" name="phone" placeholder="+1 (555) 000-0000" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="org">Organization</Label>
+                          <Input id="org" name="org" defaultValue={user.organization || ""} />
+                        </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
-                        <Input id="email" defaultValue={user.email} disabled />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Phone Number</Label>
-                        <Input id="phone" placeholder="+1 (555) 000-0000" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="org">Organization</Label>
-                        <Input id="org" defaultValue={user.organization || ""} />
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button onClick={() => toast.success("Profile updated successfully")}>
-                      Save Changes
-                    </Button>
-                  </CardFooter>
+                    </CardContent>
+                    <CardFooter>
+                      <Button type="submit">Save Changes</Button>
+                    </CardFooter>
+                  </form>
                 </Card>
 
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Security</CardTitle>
-                    <CardDescription>Manage your password and account security.</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="current-password">Current Password</Label>
-                      <Input id="current-password" type="password" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="new-password">New Password</Label>
-                      <Input id="new-password" type="password" />
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button variant="outline">Update Password</Button>
-                  </CardFooter>
+                  <form onSubmit={handleUpdatePassword}>
+                    <CardHeader>
+                      <CardTitle>Security</CardTitle>
+                      <CardDescription>Manage your password and account security.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="current-password">Current Password</Label>
+                        <Input id="current-password" name="current-password" type="password" required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="new-password">New Password</Label>
+                        <Input id="new-password" name="new-password" type="password" required minLength={6} />
+                      </div>
+                    </CardContent>
+                    <CardFooter>
+                      <Button type="submit" variant="outline">Update Password</Button>
+                    </CardFooter>
+                  </form>
                 </Card>
               </TabsContent>
             </Tabs>

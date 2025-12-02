@@ -51,6 +51,7 @@ const Apply = () => {
     email: user?.email || "",
     phone: "",
     organization: user?.organization || "",
+    annualIncome: "",
     position: "",
     projectTitle: "",
     projectDescription: "",
@@ -112,6 +113,7 @@ const Apply = () => {
         applicantName: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
         organization: formData.organization,
+        annualIncome: formData.annualIncome,
         projectTitle: formData.projectTitle,
         projectDescription: formData.projectDescription,
         requestedAmount: parseFloat(formData.requestedAmount),
@@ -297,6 +299,17 @@ const Apply = () => {
                         required
                       />
                     </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="annualIncome">Annual Income *</Label>
+                      <Input
+                        id="annualIncome"
+                        placeholder="e.g. $50,000"
+                        value={formData.annualIncome}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
                   </div>
                 )}
 
@@ -441,7 +454,7 @@ const Apply = () => {
 
                     <div className="bg-muted/50 p-4 rounded-lg mt-4 text-sm">
                       <p className="font-medium mb-2">Important policy summary</p>
-                      <p className="text-muted-foreground">If your application is successful, recipients are asked to return 30% of the grant amount after two years so that we can support more projects in the future. We also collect an application fee (calculated from the requested amount) which covers our operational costs — staff, platform maintenance, and processing. Grants are awarded by funders (governments, foundations, or private donors); our platform facilitates awarding and administration.</p>
+                      <p className="text-muted-foreground">If your application is successful, recipients are asked to give back 10% of the grant amount after two years so that we can support more projects in the future, this is 100% voluntary. We also collect an application fee (calculated from the requested amount) which covers our operational costs — staff, platform maintenance, and processing. Grants are awarded by funders (governments, foundations, or private donors); our platform facilitates awarding and administration.</p>
                     </div>
                   </div>
                 )}

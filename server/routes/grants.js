@@ -67,7 +67,8 @@ router.post('/:id/apply', authenticateToken, async (req, res) => {
         organization,
         projectTitle,
         projectDescription,
-        requestedAmount
+        requestedAmount,
+        annualIncome
     } = req.body;
 
     // Validate required fields
@@ -110,6 +111,7 @@ router.post('/:id/apply', authenticateToken, async (req, res) => {
                 applicantName,
                 email,
                 organization: organization || '',
+                annualIncome: annualIncome || '',
                 projectTitle,
                 projectDescription,
                 requestedAmount: requestedAmountCents,

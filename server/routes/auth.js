@@ -147,6 +147,108 @@ router.get('/me', authenticateToken, async (req, res) => {
   }
 });
 
+// PUT /api/auth/profile - Update user profile
+router.put('/profile', authenticateToken, async (req, res) => {
+  const { name, organization, phone } = req.body;
+
+  try {
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (organization !== undefined) updateData.organization = organization;
+    // Note: phone field doesn't exist in schema yet, but we'll prepare for it
+
+    const user = await prisma.user.update({
+      where: { id: req.user.userId },
+      data: updateData,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        organization: true,
+        role: true
+      }
+    });
+
+    res.json({ user, message: 'Profile updated successfully' });
+  } catch (err) {
+    console.error('Update profile error:', err);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+// PUT /api/auth/password - Update user password
+router.put('/password', authenticateToken, async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: 'Current password and new password are required' });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({ error: 'New password must be at least 6 characters' });
+  }
+
+  try {
+    // Get user with password hash
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.userId },
+      select: { id: true, passwordHash: true }
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Verify current password
+    const isValidPassword = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!isValidPassword) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    // Hash new password
+    const newPasswordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+
+    // Update password
+    await prisma.user.update({
+      where: { id: req.user.userId },
+      data: { passwordHash: newPasswordHash }
+    });
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (err) {
+    console.error('Update password error:', err);
+    res.status(500).json({ error: 'Failed to update password' });
+  }
+});
+
+// Admin routes
+// GET /api/auth/admin/users - Get all users (admin only)
+router.get('/admin/users', authenticateToken, async (req, res) => {
+  try {
+    // Check if user is admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
+    }
+
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        organization: true,
+        role: true,
+        createdAt: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json(users);
+  } catch (err) {
+    console.error('Get users error:', err);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
 // Middleware to authenticate JWT token
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];

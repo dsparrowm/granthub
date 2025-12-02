@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
-interface User {
+export interface User {
     id: string;
     email: string;
     name: string;

@@ -50,6 +50,7 @@ model Application {
   projectDescription  String   @map("project_description")
   requestedAmount     Int      @map("requested_amount") // amount in cents
   applicationFeeCents Int      @map("application_fee_cents")
+  annualIncome        String?  @map("annual_income")
   status              String   @default("pending")
   submittedAt         DateTime @default(now()) @map("submitted_at")
 

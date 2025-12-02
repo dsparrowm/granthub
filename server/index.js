@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const grantsRouter = require('./routes/grants');
 const authRouter = require('./routes/auth');
+const applicationsRouter = require('./routes/applications');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -15,6 +16,7 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/auth', authRouter);
 app.use('/api/grants', grantsRouter);
+app.use('/api/applications', applicationsRouter);
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 

@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, Clock, ArrowLeft, Share2, Linkedin, Twitter, Facebook, Link as LinkIcon, Bookmark } from "lucide-react";
+import { Calendar, Clock, ArrowLeft, Share2, Linkedin, Twitter, Facebook, Link as LinkIcon, Bookmark, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
