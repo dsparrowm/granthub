@@ -26,12 +26,12 @@ import {
     Activity
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { Application } from "@/services/api";
+import { Application, getAllApplications, updateApplicationStatus, getAllUsers } from "@/services/api";
 
 
 
 const AdminDashboard = () => {
-    const { isAuthenticated, user, logout, token } = useAuth();
+    const { isAuthenticated, user, logout } = useAuth();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState("overview");
     const [applications, setApplications] = useState<Application[]>([]);
@@ -51,57 +51,44 @@ const AdminDashboard = () => {
     }, [isAuthenticated, user, navigate]);
 
     useEffect(() => {
-        console.log('[AdminDashboard] Applications useEffect triggered', { token: !!token, user, role: user?.role });
+        console.log('[AdminDashboard] Applications useEffect triggered', {
+            user,
+            role: user?.role,
+            hasUser: !!user,
+            isAdmin: user?.role === 'admin'
+        });
         const loadApplications = async () => {
-            if (!token || !user || user.role !== 'admin') {
-                console.log('[AdminDashboard] Skipping applications fetch', { token: !!token, user: !!user, role: user?.role });
+            if (!user || user.role !== 'admin') {
+                console.log('[AdminDashboard] Skipping applications fetch', { user: !!user, role: user?.role });
                 return;
             }
 
             console.log('[AdminDashboard] Fetching applications...');
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/applications/admin/all`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (!response.ok) throw new Error('Failed to fetch');
-
-                const data = await response.json();
+                const data = await getAllApplications();
                 console.log('[AdminDashboard] Applications fetched:', data.length);
                 setApplications(data);
             } catch (error) {
-                console.log('Could not load applications:', error);
+                console.error('Could not load applications:', error);
             } finally {
                 setLoading(false);
             }
         };
 
         loadApplications();
-    }, [token, user]);
+    }, [user]);
 
     useEffect(() => {
-        console.log('[AdminDashboard] Users useEffect triggered', { token: !!token, user, role: user?.role });
+        console.log('[AdminDashboard] Users useEffect triggered', { user, role: user?.role });
         const loadUsers = async () => {
-            if (!token || !user || user.role !== 'admin') {
-                console.log('[AdminDashboard] Skipping users fetch', { token: !!token, user: !!user, role: user?.role });
+            if (!user || user.role !== 'admin') {
+                console.log('[AdminDashboard] Skipping users fetch', { user: !!user, role: user?.role });
                 return;
             }
 
             console.log('[AdminDashboard] Fetching users...');
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/auth/admin/users`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (!response.ok) throw new Error('Failed to fetch');
-
-                const data = await response.json();
+                const data = await getAllUsers();
                 console.log('[AdminDashboard] Users fetched:', data.length);
                 setUsers(data);
             } catch (error) {
@@ -110,7 +97,7 @@ const AdminDashboard = () => {
         };
 
         loadUsers();
-    }, [token, user]);
+    }, [user]);
 
     const handleLogout = () => {
         logout();
@@ -118,22 +105,9 @@ const AdminDashboard = () => {
         navigate("/");
     };
 
-    const handleStatusChange = async (id: string, newStatus: string) => {
-        if (!token) return;
-
+    const handleStatusChange = async (id: string, newStatus: 'pending' | 'under_review' | 'approved' | 'rejected') => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/applications/${id}/status`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ status: newStatus })
-            });
-
-            if (!response.ok) throw new Error('Update failed');
-
-            const updatedApp = await response.json();
+            const updatedApp = await updateApplicationStatus(id, newStatus);
             setApplications(prev => prev.map(app =>
                 app.id === id ? updatedApp : app
             ));
@@ -149,20 +123,20 @@ const AdminDashboard = () => {
             case 'approved': return 'bg-green-100 text-green-800 border-green-200';
             case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
             case 'under_review': return 'bg-blue-100 text-blue-800 border-blue-200';
-            case 'submitted': return 'bg-gray-100 text-gray-800 border-gray-200';
+            case 'pending': return 'bg-gray-100 text-gray-800 border-gray-200';
             default: return 'bg-gray-100 text-gray-800 border-gray-200';
         }
     };
 
     const filteredApplications = applications.filter(app =>
-        app.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        app.applicantName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         app.grant?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         app.id?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const stats = {
         total: applications.length,
-        pending: applications.filter(a => a.status === 'submitted' || a.status === 'under_review').length,
+        pending: applications.filter(a => a.status === 'pending' || a.status === 'under_review').length,
         approved: applications.filter(a => a.status === 'approved').length,
         totalValue: applications.filter(a => a.status === 'approved').reduce((acc, curr) => acc + (curr.requestedAmount || 0), 0)
     };
@@ -331,10 +305,10 @@ const AdminDashboard = () => {
                                                     <div key={app.id} className="flex items-center">
                                                         <div className="space-y-1">
                                                             <p className="text-sm font-medium leading-none">
-                                                                New application from {app.user.name}
+                                                                New application from {app?.user?.name}
                                                             </p>
                                                             <p className="text-sm text-muted-foreground">
-                                                                {app.grant.title}
+                                                                {app.grant?.title || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div className="ml-auto font-medium text-xs text-muted-foreground">
@@ -391,12 +365,12 @@ const AdminDashboard = () => {
                                                         <TableCell className="font-medium">{app.id}</TableCell>
                                                         <TableCell>
                                                             <div>
-                                                                <div className="font-medium">{app.user.name}</div>
-                                                                <div className="text-xs text-muted-foreground">{app.user.email}</div>
+                                                                <div className="font-medium">{app.user?.name || app.applicantName}</div>
+                                                                <div className="text-xs text-muted-foreground">{app.user?.email || app.email}</div>
                                                             </div>
                                                         </TableCell>
                                                         <TableCell>{app.annualIncome || 'N/A'}</TableCell>
-                                                        <TableCell>{app.grant.title}</TableCell>
+                                                        <TableCell>{app.grant?.title || 'N/A'}</TableCell>
                                                         <TableCell>${(app.requestedAmount / 100).toLocaleString()}</TableCell>
                                                         <TableCell>
                                                             <Badge variant="outline" className={getStatusColor(app.status)}>
@@ -406,13 +380,13 @@ const AdminDashboard = () => {
                                                         <TableCell>
                                                             <Select
                                                                 defaultValue={app.status}
-                                                                onValueChange={(val) => handleStatusChange(app.id, val)}
+                                                                onValueChange={(val) => handleStatusChange(app.id, val as 'pending' | 'under_review' | 'approved' | 'rejected')}
                                                             >
                                                                 <SelectTrigger className="w-[130px] h-8">
                                                                     <SelectValue />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
-                                                                    <SelectItem value="submitted">Submitted</SelectItem>
+                                                                    <SelectItem value="pending">Pending</SelectItem>
                                                                     <SelectItem value="under_review">Under Review</SelectItem>
                                                                     <SelectItem value="approved">Approve</SelectItem>
                                                                     <SelectItem value="rejected">Reject</SelectItem>
@@ -456,7 +430,7 @@ const AdminDashboard = () => {
                                                                 {u.role}
                                                             </Badge>
                                                         </TableCell>
-                                                        <TableCell>{new Date(u.createdAt).toLocaleDateString()}</TableCell>
+                                                        <TableCell>N/A</TableCell>
                                                         <TableCell className="text-right">
                                                             <Button variant="ghost" size="sm">Edit</Button>
                                                         </TableCell>

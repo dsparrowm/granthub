@@ -14,7 +14,7 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const { login } = useAuth();
+    const { login, user } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -22,12 +22,21 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            await login(email, password);
+            const loggedInUser = await login(email, password);
+            console.log('[Login] Login successful, user:', loggedInUser);
+
             toast.success("Welcome back!");
-            setTimeout(() => {
+
+            // Navigate based on user role
+            if (loggedInUser?.role === 'admin') {
+                console.log('[Login] Navigating to admin dashboard');
+                navigate("/admin");
+            } else {
+                console.log('[Login] Navigating to profile');
                 navigate("/profile");
-            }, 100);
+            }
         } catch (error) {
+            console.error('[Login] Login failed:', error);
             toast.error("Invalid email or password");
             setIsLoading(false);
         }

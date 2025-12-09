@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import GrantCard from "@/components/GrantCard";
@@ -10,10 +10,23 @@ import { Slider } from "@/components/ui/slider";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Search, SlidersHorizontal, X } from "lucide-react";
-import { getAllGrants } from "@/services/grantsData";
+import { getAllGrants } from "@/services/appwrite/grants.service";
 
 const Grants = () => {
-  const allGrants = getAllGrants();
+  const [allGrants, setAllGrants] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadGrants = async () => {
+      try {
+        const grants = await getAllGrants();
+        setAllGrants(grants);
+      } catch (error) {
+        console.error('Failed to load grants:', error);
+        setAllGrants([]);
+      }
+    };
+    loadGrants();
+  }, []);
 
   // Extract unique values for filters
   const categories = Array.from(new Set(allGrants.map(g => g.category)));

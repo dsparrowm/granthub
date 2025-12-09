@@ -224,3 +224,39 @@ export const getGrantById = (id: string): Grant | undefined => {
 export const getAllGrants = (): Grant[] => {
     return grantsData;
 };
+
+// Appwrite integration functions (async versions)
+// These can be used to fetch from Appwrite when backend is ready
+export const getAllGrantsAsync = async (): Promise<Grant[]> => {
+    // Check if Appwrite is configured
+    const appwriteProjectId = import.meta.env.VITE_APPWRITE_PROJECT_ID;
+
+    if (appwriteProjectId) {
+        try {
+            const { getAllGrants: getGrantsFromAppwrite } = await import('./appwrite/grants.service');
+            return await getGrantsFromAppwrite();
+        } catch (error) {
+            console.warn('Appwrite not configured, falling back to local data:', error);
+        }
+    }
+
+    // Fallback to local data
+    return Promise.resolve(grantsData);
+};
+
+export const getGrantByIdAsync = async (id: string): Promise<Grant | undefined> => {
+    const appwriteProjectId = import.meta.env.VITE_APPWRITE_PROJECT_ID;
+
+    if (appwriteProjectId) {
+        try {
+            const { getGrantById: getGrantFromAppwrite } = await import('./appwrite/grants.service');
+            return await getGrantFromAppwrite(id);
+        } catch (error) {
+            console.warn('Appwrite not configured, falling back to local data:', error);
+        }
+    }
+
+    // Fallback to local data
+    return Promise.resolve(grantsData.find(grant => grant.id === id));
+};
+

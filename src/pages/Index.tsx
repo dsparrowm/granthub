@@ -8,18 +8,33 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import GrantCard from "@/components/GrantCard";
-import { getAllGrants } from "@/services/grantsData";
+import { getAllGrants } from "@/services/appwrite/grants.service";
 import heroImage from "@/assets/Hero-Home.png";
 import heroMobile from "@/assets/Hero-mobile.png";
 import newsImg1 from "@/assets/ceo-image.png";
 import newsImg2 from "@/assets/hero-collaboration.jpg";
 import newsImg3 from "@/assets/community-image.png";
+import { useState, useEffect } from "react";
 // Use the bundled `heroImage` as the hero background. The `gradient-hero` overlay remains as a
 // visual fallback/overlay.
 
 const Index = () => {
   // Get grants from centralized service
-  const allGrants = getAllGrants();
+  const [allGrants, setAllGrants] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadGrants = async () => {
+      try {
+        const grants = await getAllGrants();
+        setAllGrants(grants);
+      } catch (error) {
+        console.error('Failed to load grants:', error);
+        setAllGrants([]);
+      }
+    };
+    loadGrants();
+  }, []);
+
   const featuredGrants = allGrants.slice(0, 4);
 
   // small helper: sort grants by deadline (earliest first) for "Closing soon"

@@ -9,7 +9,7 @@ interface GrantCardProps {
   id: string;
   title: string;
   organization: string;
-  amount: string;
+  amount: string | number;
   deadline: string;
   location: string;
   category: string;

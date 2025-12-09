@@ -40,24 +40,26 @@ const Profile = () => {
     }
 
     const loadData = async () => {
-      if (!token) return;
+      if (!user?.id) return;
 
       try {
-        const data = await fetchUserApplications(token);
+        const data = await fetchUserApplications(user.id);
 
         // Map backend data to frontend structure
-        // We need to add feeStatus since it's not in the backend yet
         const mappedApps = data.map(app => ({
           ...app,
-          // Derive feeStatus based on status or random for now since backend doesn't have it
-          // In a real app, this would come from the backend
-          feeStatus: app.status === 'pending' ? 'unpaid' : 'paid',
-          feeAmount: app.applicationFeeCents,
+          // Derive feeStatus based on status since backend doesn't have payment tracking yet
+          feeStatus: (app.feeStatus || (app.status === 'pending' ? 'pending' : 'paid')) as 'pending' | 'processing' | 'paid',
+          feeAmount: app.feeAmount || app.applicationFeeCents || 0,
           // Ensure grant object has what we need
           grant: {
             ...app.grant,
-            // If amount is missing in grant object from API, use a default or format it
-            amount: app.grant.amount ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(app.grant.amount / 100) : 'N/A'
+            // Format amount properly
+            amount: app.grant?.amount ? (
+              typeof app.grant.amount === 'number'
+                ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(app.grant.amount / 100)
+                : app.grant.amount
+            ) : 'N/A'
           }
         }));
 
@@ -277,7 +279,7 @@ const Profile = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {applications.filter(a => a.status === 'pending_payment').length}
+                        {applications.filter(a => a.status === 'pending').length}
                       </div>
                       <p className="text-xs text-muted-foreground">Requires payment or info</p>
                     </CardContent>
@@ -307,7 +309,7 @@ const Profile = () => {
                           <div key={app.id} className="flex items-center">
                             <div className="space-y-1">
                               <p className="text-sm font-medium leading-none">
-                                Application {app.status === 'submitted' ? 'Submitted' : 'Updated'}
+                                Application {app.status === 'pending' ? 'Submitted' : 'Updated'}
                               </p>
                               <p className="text-sm text-muted-foreground">
                                 {app.grant.title}
@@ -397,7 +399,7 @@ const Profile = () => {
                           </div>
                         </div>
 
-                        {app.status === 'pending_payment' && (
+                        {app.status === 'pending' && (
                           <div className="bg-yellow-50/50 p-6 flex flex-col justify-center items-center border-t md:border-t-0 md:border-l border-border min-w-[200px]">
                             <p className="text-sm font-medium text-yellow-800 mb-3">Action Required</p>
                             <Button size="sm" onClick={() => setActiveTab('payments')}>

@@ -1,6 +1,10 @@
-export function parseAmountToNumber(amount: string): number | null {
+export function parseAmountToNumber(amount: string | number): number | null {
     if (!amount) return null;
-    // Extract all numbers like 50,000 or 100000
+    
+    // If it's already a number, return it directly
+    if (typeof amount === 'number') return amount;
+    
+    // If it's a string, extract all numbers like 50,000 or 100000
     const matches = amount.match(/\d{1,3}(?:,\d{3})*(?:\.\d+)?/g);
     if (!matches) return null;
     // Convert matches to numbers removing commas
@@ -9,7 +13,7 @@ export function parseAmountToNumber(amount: string): number | null {
     return Math.max(...nums);
 }
 
-export function computeApplicationFee(amount: string): number {
+export function computeApplicationFee(amount: string | number): number {
     // Tiered fee structure for grants $250K - $5M
     // If parsing fails, default fee is $500.
     const parsed = parseAmountToNumber(amount);

@@ -11,19 +11,40 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle, Upload, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-import { getGrantById } from "@/services/grantsData";
+import { getGrantById } from "@/services/appwrite/grants.service";
 import { computeApplicationFee, formatCurrency } from "@/lib/fees";
 import { useAuth } from "@/contexts/AuthContext";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+import { createApplication } from "@/services/api";
 
 const Apply = () => {
   const { grantId } = useParams();
   const navigate = useNavigate();
-  const { user, token, isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 5;
   const progress = (currentStep / totalSteps) * 100;
+  const [grant, setGrant] = useState<any>(null);
+
+  // Load grant data
+  useEffect(() => {
+    const loadGrant = async () => {
+      if (!grantId) return;
+      try {
+        const grantData = await getGrantById(grantId);
+        if (!grantData) {
+          toast.error("Grant not found");
+          navigate("/grants");
+          return;
+        }
+        setGrant(grantData);
+      } catch (error) {
+        console.error('Failed to load grant:', error);
+        toast.error("Failed to load grant");
+        navigate("/grants");
+      }
+    };
+    loadGrant();
+  }, [grantId, navigate]);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -32,17 +53,6 @@ const Apply = () => {
       navigate("/login");
     }
   }, [isAuthenticated, navigate]);
-
-  // Fetch grant data
-  const grant = grantId ? getGrantById(grantId) : null;
-
-  // Redirect if grant not found
-  useEffect(() => {
-    if (grantId && !grant) {
-      toast.error("Grant not found");
-      navigate("/grants");
-    }
-  }, [grantId, grant, navigate]);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -102,7 +112,7 @@ const Apply = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!token) {
+    if (!user?.id || !grantId) {
       toast.error("Authentication required");
       navigate("/login");
       return;
@@ -110,6 +120,8 @@ const Apply = () => {
 
     try {
       const applicationData = {
+        userId: user.id,
+        grantId,
         applicantName: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
         organization: formData.organization,
@@ -119,25 +131,12 @@ const Apply = () => {
         requestedAmount: parseFloat(formData.requestedAmount),
       };
 
-      // Call API
-      const response = await fetch(`${API_URL}/api/grants/${grantId}/apply`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(applicationData),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Application submission failed");
-      }
-
-      const result = await response.json();
+      // Call Appwrite service
+      const result = await createApplication(applicationData);
 
       // Navigate to success page
-      navigate(`/application/${result.id}/success`);
+      toast.success("Application submitted successfully!");
+      navigate(`/profile`); // or create a success page
     } catch (error) {
       console.error("Application error:", error);
       toast.error(error instanceof Error ? error.message : "Failed to submit application. Please try again.");

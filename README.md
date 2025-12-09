@@ -1,5 +1,15 @@
 # Welcome to your Lovable project
 
+## ⚠️ Backend Migration Notice
+
+**This project has been migrated from Express.js to Appwrite Backend-as-a-Service.**
+
+Before running the application, you need to:
+1. Set up an Appwrite project
+2. Configure environment variables
+
+**See [APPWRITE_MIGRATION.md](./APPWRITE_MIGRATION.md) for complete setup instructions.**
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/346075b3-7637-4a6f-a6eb-1f08de58be70
@@ -59,6 +69,7 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- **Appwrite** (Backend-as-a-Service for authentication, database, and storage)
 
 ## How can I deploy this project?
 

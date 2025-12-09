@@ -247,58 +247,9 @@ const About = () => {
         </section>
 
         {/* Team Section */}
-        <section className="py-24 bg-muted/30">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">Meet the Team</h2>
-              <p className="text-muted-foreground">The passionate individuals driving our mission</p>
-            </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {team.map((member, index) => (
-                <div key={index} className="group text-center">
-                  <div className="relative mb-6 inline-block">
-                    <Avatar className="h-32 w-32 mx-auto border-4 border-background shadow-xl group-hover:scale-105 transition-transform duration-300">
-                      <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${member.name}`} />
-                      <AvatarFallback>{member.initials}</AvatarFallback>
-                    </Avatar>
-                    <div className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
-                      <Users className="h-4 w-4" />
-                    </div>
-                  </div>
-                  <h3 className="text-lg font-bold mb-1">{member.name}</h3>
-                  <p className="text-sm text-primary font-medium mb-3">{member.role}</p>
-                  <p className="text-sm text-muted-foreground leading-relaxed px-4">
-                    {member.bio}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
-        {/* CTA Section */}
-        <section className="py-24 relative overflow-hidden">
-          <div className="absolute inset-0 bg-primary -z-20" />
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80')] bg-cover bg-center opacity-10 mix-blend-overlay -z-10" />
 
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-5xl font-bold text-primary-foreground mb-6">
-              Ready to make an impact?
-            </h2>
-            <p className="text-primary-foreground/80 text-lg md:text-xl max-w-2xl mx-auto mb-10">
-              Join thousands of innovators who have already started their journey with us.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" variant="secondary" className="h-14 px-8 text-lg rounded-full shadow-xl">
-                <Link to="/grants">Find Funding</Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="h-14 px-8 text-lg rounded-full bg-transparent text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground hover:text-primary">
-                <Link to="/contact">Partner With Us</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
       </main>
 
       <Footer />

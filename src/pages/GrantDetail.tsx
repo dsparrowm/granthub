@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, DollarSign, MapPin, Building2, Users, FileText, CheckCircle } from "lucide-react";
 import { computeApplicationFee, formatCurrency } from "@/lib/fees";
-import { getGrantById } from "@/services/grantsData";
+import { getGrantById } from "@/services/appwrite/grants.service";
 import EligibilityModal from "@/components/EligibilityModal";
 import { toast } from "sonner";
 
@@ -14,13 +14,29 @@ const GrantDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [eligibilityModalOpen, setEligibilityModalOpen] = useState(false);
+  const [grant, setGrant] = useState<any>(null);
 
-  // Fetch grant data from centralized service
-  const grant = id ? getGrantById(id) : null;
+  useEffect(() => {
+    const loadGrant = async () => {
+      if (!id) return;
+      try {
+        const grantData = await getGrantById(id);
+        if (!grantData) {
+          toast.error("Grant not found");
+          navigate("/grants");
+          return;
+        }
+        setGrant(grantData);
+      } catch (error) {
+        console.error('Failed to load grant:', error);
+        toast.error("Failed to load grant");
+        navigate("/grants");
+      }
+    };
+    loadGrant();
+  }, [id, navigate]);
 
   if (!grant) {
-    toast.error("Grant not found");
-    navigate("/grants");
     return null;
   }
 

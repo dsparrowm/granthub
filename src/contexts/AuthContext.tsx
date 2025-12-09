@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+import * as authService from "@/services/appwrite/auth.service";
 
 export interface User {
     id: string;
@@ -8,12 +7,13 @@ export interface User {
     name: string;
     organization?: string;
     role: "applicant" | "admin";
+    createdAt?: string;
 }
 
 interface AuthContextType {
     user: User | null;
-    token: string | null;
-    login: (email: string, password: string) => Promise<void>;
+    token: string | null; // Keep for backwards compatibility (will be null with Appwrite)
+    login: (email: string, password: string) => Promise<User>;
     signup: (email: string, password: string, name: string, organization?: string) => Promise<void>;
     logout: () => void;
     isAuthenticated: boolean;
@@ -31,39 +31,31 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
-    const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Check for stored session on mount
-        const storedUser = localStorage.getItem("user");
-        const storedToken = localStorage.getItem("token");
+        // Check for existing Appwrite session on mount
+        const checkSession = async () => {
+            try {
+                const currentUser = await authService.getCurrentUser();
+                if (currentUser) {
+                    setUser(currentUser);
+                }
+            } catch (error) {
+                console.error("Session check error:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        if (storedUser && storedToken) {
-            setUser(JSON.parse(storedUser));
-            setToken(storedToken);
-        }
-        setLoading(false);
+        checkSession();
     }, []);
 
     const login = async (email: string, password: string) => {
         try {
-            const response = await fetch(`${API_URL}/api/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || "Login failed");
-            }
-
-            const data = await response.json();
-            setUser(data.user);
-            setToken(data.token);
-            localStorage.setItem("user", JSON.stringify(data.user));
-            localStorage.setItem("token", data.token);
+            const loggedInUser = await authService.login(email, password);
+            setUser(loggedInUser);
+            return loggedInUser; // Return the user
         } catch (error) {
             console.error("Login error:", error);
             throw error;
@@ -77,33 +69,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         organization?: string
     ) => {
         try {
-            const response = await fetch(`${API_URL}/api/auth/signup`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password, name, organization }),
+            const newUser = await authService.signup({
+                email,
+                password,
+                name,
+                organization,
             });
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || "Signup failed");
-            }
-
-            const data = await response.json();
-            setUser(data.user);
-            setToken(data.token);
-            localStorage.setItem("user", JSON.stringify(data.user));
-            localStorage.setItem("token", data.token);
+            setUser(newUser);
         } catch (error) {
             console.error("Signup error:", error);
             throw error;
         }
     };
 
-    const logout = () => {
-        setUser(null);
-        setToken(null);
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
+    const logout = async () => {
+        try {
+            await authService.logout();
+            setUser(null);
+        } catch (error) {
+            console.error("Logout error:", error);
+            // Still clear local state even if logout fails
+            setUser(null);
+        }
     };
 
     if (loading) {
@@ -114,7 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         <AuthContext.Provider
             value={{
                 user,
-                token,
+                token: null, // Appwrite handles sessions internally
                 login,
                 signup,
                 logout,
