@@ -58,8 +58,7 @@ const Contact = () => {
                       </div>
                       <div>
                         <p className="font-medium">Phone</p>
-                        <p className="text-sm text-muted-foreground">+1 (555) 123-4567</p>
-                        <p className="text-sm text-muted-foreground">+1 (555) 987-6543</p>
+                        <p className="text-sm text-muted-foreground">+1 408 304-0375</p>
                       </div>
                     </div>
 
@@ -69,8 +68,8 @@ const Contact = () => {
                       </div>
                       <div>
                         <p className="font-medium">Address</p>
-                        <p className="text-sm text-muted-foreground">123 Grant Street</p>
-                        <p className="text-sm text-muted-foreground">New York, NY 10001</p>
+                        <p className="text-sm text-muted-foreground">27084 Bogan Passage Suite 410</p>
+                        <p className="text-sm text-muted-foreground">Qulin, MO 63961</p>
                       </div>
                     </div>
 

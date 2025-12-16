@@ -41,11 +41,11 @@ const Footer = () => {
               </li>
               <li className="flex items-center space-x-2 text-sm text-primary-foreground/80">
                 <Phone size={16} />
-                <span>+1 (555) 123-4567</span>
+                <span>+1 408 304-0375</span>
               </li>
               <li className="flex items-center space-x-2 text-sm text-primary-foreground/80">
                 <MapPin size={16} />
-                <span>123 Grant Street, NY 10001</span>
+                <span>27084 Bogan Passage Suite 410 Qulin, MO 63961</span>
               </li>
             </ul>
           </div>

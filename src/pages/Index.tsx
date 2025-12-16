@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import { Link } from "react-router-dom";
 import { Search, FileText, Award, ArrowRight, CheckCircle, DollarSign, Quote, Clock, TrendingUp } from "lucide-react";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
@@ -562,35 +562,34 @@ const Index = () => {
               {testimonials.map((testimonial, index) => (
                 <div
                   key={index}
-                  className="group relative bg-card p-8 rounded-2xl shadow-sm border border-border/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                  className="group relative bg-card p-10 rounded-2xl shadow-sm border border-border/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
                 >
-                  <div className="absolute top-8 right-8 text-primary/10 group-hover:text-primary/20 transition-colors">
-                    <Quote className="h-12 w-12" />
+                  <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-primary to-primary/20" />
+
+                  <div className="absolute -top-6 -right-6 text-primary/5 group-hover:text-primary/10 transition-colors rotate-12">
+                    <Quote className="h-40 w-40" />
                   </div>
 
-                  <div className="flex items-center gap-4 mb-6">
-                    <Avatar className="h-12 w-12 border-2 border-background shadow-sm">
-                      <AvatarImage src={testimonial.image} alt={testimonial.name} />
-                      <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h4 className="font-bold text-foreground">{testimonial.name}</h4>
+                  <div className="relative z-10">
+                    <div className="mb-6">
+                      <Quote className="h-8 w-8 text-primary mb-4 opacity-50" />
+                      <p className="text-lg font-medium leading-relaxed text-foreground">"{testimonial.content}"</p>
+                    </div>
+
+                    <div className="flex flex-col gap-1 mb-6 border-l-2 border-primary/20 pl-4">
+                      <h4 className="font-bold text-foreground text-lg">{testimonial.name}</h4>
                       <p className="text-sm text-muted-foreground">{testimonial.role}</p>
                     </div>
-                  </div>
 
-                  <div className="mb-6 relative z-10">
-                    <p className="text-muted-foreground leading-relaxed">"{testimonial.content}"</p>
-                  </div>
-
-                  <div className="pt-6 border-t border-border/50 flex items-center justify-between">
-                    <div className="flex items-center text-sm font-medium text-primary">
-                      <Award className="h-4 w-4 mr-2" />
-                      {testimonial.grant}
+                    <div className="pt-6 border-t border-border/50 flex items-center justify-between">
+                      <div className="flex items-center text-sm font-medium text-primary bg-primary/5 px-3 py-1.5 rounded-full">
+                        <Award className="h-4 w-4 mr-2" />
+                        {testimonial.grant}
+                      </div>
+                      <Badge variant="outline" className="border-green-200 text-green-700 bg-green-50">
+                        Funded
+                      </Badge>
                     </div>
-                    <Badge variant="outline" className="bg-green-500/5 text-green-600 border-green-200 hover:bg-green-500/10">
-                      Funded
-                    </Badge>
                   </div>
                 </div>
               ))}

@@ -6,6 +6,7 @@ export interface Grant {
     amount: string;
     amount_min?: number;
     amount_max?: number;
+    applicationFee: number;
     deadline: string;
     location: string;
     category: string;
@@ -24,7 +25,8 @@ export const grantsData: Grant[] = [
         amount: "$500,000 - $1,000,000",
         amount_min: 500000,
         amount_max: 1000000,
-        deadline: "Dec 31, 2025",
+        applicationFee: 2500,
+        deadline: "Jun 30, 2026",
         location: "United States",
         category: "Technology",
         description: "Supporting innovative tech startups with groundbreaking ideas in AI, blockchain, and sustainable technology.",
@@ -59,7 +61,8 @@ export const grantsData: Grant[] = [
         amount: "$250,000 - $500,000",
         amount_min: 250000,
         amount_max: 500000,
-        deadline: "Nov 15, 2025",
+        applicationFee: 1500,
+        deadline: "May 15, 2026",
         location: "Global",
         category: "Business",
         description: "Empowering businesses to scale operations, expand market presence, and create jobs in their communities.",
@@ -90,7 +93,8 @@ export const grantsData: Grant[] = [
         amount: "$750,000 - $1,500,000",
         amount_min: 750000,
         amount_max: 1500000,
-        deadline: "Jan 20, 2026",
+        applicationFee: 3500,
+        deadline: "Jul 20, 2026",
         location: "Worldwide",
         category: "Social Good",
         description: "Funding large-scale projects that create transformative social change and community development.",
@@ -123,7 +127,8 @@ export const grantsData: Grant[] = [
         amount: "$1,000,000 - $2,500,000",
         amount_min: 1000000,
         amount_max: 2500000,
-        deadline: "Feb 28, 2026",
+        applicationFee: 5000,
+        deadline: "Aug 31, 2026",
         location: "Europe",
         category: "Environment",
         description: "Supporting large-scale renewable energy projects and sustainable solutions for climate change.",
@@ -156,7 +161,8 @@ export const grantsData: Grant[] = [
         amount: "$600,000 - $1,200,000",
         amount_min: 600000,
         amount_max: 1200000,
-        deadline: "Dec 15, 2025",
+        applicationFee: 3000,
+        deadline: "Jun 15, 2026",
         location: "United States",
         category: "Healthcare",
         description: "Advancing healthcare technology and improving patient outcomes through major innovation initiatives.",
@@ -189,7 +195,8 @@ export const grantsData: Grant[] = [
         amount: "$400,000 - $800,000",
         amount_min: 400000,
         amount_max: 800000,
-        deadline: "Nov 30, 2025",
+        applicationFee: 2000,
+        deadline: "May 31, 2026",
         location: "Global",
         category: "Education",
         description: "Supporting large-scale educational initiatives that transform learning outcomes and accessibility.",

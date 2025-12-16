@@ -7,7 +7,8 @@ const sampleGrants = [
         title: 'Innovation Startup Grant',
         description: 'Support for innovative tech startups with groundbreaking ideas in AI, blockchain, and sustainable technology. Designed for early-stage companies ready to scale.',
         amount: 75000000, // $750,000 in cents
-        deadline: new Date('2025-12-31'),
+        applicationFee: 250000, // $2,500 in cents
+        deadline: new Date('2026-06-30'),
         eligibility: [
             'Registered startup less than 3 years old',
             'Technology-focused business model',
@@ -24,7 +25,8 @@ const sampleGrants = [
         title: 'Business Scale-Up Fund',
         description: 'Empowering businesses to scale operations, expand market presence, and create jobs. Substantial capital for established businesses ready to grow.',
         amount: 37500000, // $375,000 in cents
-        deadline: new Date('2025-11-15'),
+        applicationFee: 150000, // $1,500 in cents
+        deadline: new Date('2026-05-15'),
         eligibility: [
             'Operating business for at least 2 years',
             'Clear growth plan',
@@ -40,7 +42,8 @@ const sampleGrants = [
         title: 'Social Impact Initiative',
         description: 'Funding large-scale projects that create transformative social change and community development with measurable, sustainable impact.',
         amount: 112500000, // $1,125,000 in cents
-        deadline: new Date('2026-01-20'),
+        applicationFee: 350000, // $3,500 in cents
+        deadline: new Date('2026-07-20'),
         eligibility: [
             'Non-profit or social enterprise',
             'Clear social impact mission',
@@ -57,7 +60,8 @@ const sampleGrants = [
         title: 'Green Energy Grant',
         description: 'Supporting large-scale renewable energy projects and sustainable solutions for climate change with significant environmental impact potential.',
         amount: 175000000, // $1,750,000 in cents
-        deadline: new Date('2026-02-28'),
+        applicationFee: 500000, // $5,000 in cents
+        deadline: new Date('2026-08-31'),
         eligibility: [
             'Focus on renewable energy or sustainability',
             'Environmental impact assessment',
@@ -74,7 +78,8 @@ const sampleGrants = [
         title: 'Healthcare Innovation Fund',
         description: 'Advancing healthcare technology and improving patient outcomes through major innovation initiatives at scale.',
         amount: 90000000, // $900,000 in cents
-        deadline: new Date('2025-12-15'),
+        applicationFee: 300000, // $3,000 in cents
+        deadline: new Date('2026-06-15'),
         eligibility: [
             'Healthcare-focused innovation',
             'Clear patient benefit',
@@ -91,7 +96,8 @@ const sampleGrants = [
         title: 'Education Transformation Grant',
         description: 'Supporting large-scale educational initiatives that transform learning outcomes and accessibility with measurable impact.',
         amount: 60000000, // $600,000 in cents
-        deadline: new Date('2025-11-30'),
+        applicationFee: 200000, // $2,000 in cents
+        deadline: new Date('2026-05-31'),
         eligibility: [
             'Education-focused mission',
             'Demonstrated impact on learning',

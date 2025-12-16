@@ -42,7 +42,8 @@ const sampleGrants = [
         category: "Business",
         amount: 50000,
         amountMin: 10000,
-        deadline: new Date('2025-12-31').toISOString(),
+        application_fee: "500",
+        deadline: new Date('2026-06-30').toISOString(),
         location: "California",
         eligibility: JSON.stringify([
             "Must be a registered business",
@@ -64,7 +65,8 @@ const sampleGrants = [
         category: "Education",
         amount: 75000,
         amountMin: 25000,
-        deadline: new Date('2025-11-30').toISOString(),
+        application_fee: "750",
+        deadline: new Date('2026-05-31').toISOString(),
         location: "Nationwide",
         eligibility: JSON.stringify([
             "Registered educational institution",
@@ -86,7 +88,8 @@ const sampleGrants = [
         category: "Healthcare",
         amount: 100000,
         amountMin: 50000,
-        deadline: new Date('2026-01-15').toISOString(),
+        application_fee: "1000",
+        deadline: new Date('2026-07-15').toISOString(),
         location: "Urban Areas",
         eligibility: JSON.stringify([
             "Non-profit organization",
@@ -108,7 +111,8 @@ const sampleGrants = [
         category: "Arts",
         amount: 30000,
         amountMin: 5000,
-        deadline: new Date('2025-10-31').toISOString(),
+        application_fee: "500",
+        deadline: new Date('2026-04-30').toISOString(),
         location: "Nationwide",
         eligibility: JSON.stringify([
             "Arts organization or collective",
@@ -130,7 +134,8 @@ const sampleGrants = [
         category: "Environment",
         amount: 150000,
         amountMin: 50000,
-        deadline: new Date('2026-02-28').toISOString(),
+        application_fee: "1500",
+        deadline: new Date('2026-08-31').toISOString(),
         location: "Nationwide",
         eligibility: JSON.stringify([
             "Registered business or non-profit",
